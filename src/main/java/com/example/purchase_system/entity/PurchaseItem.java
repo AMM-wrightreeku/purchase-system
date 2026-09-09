@@ -4,14 +4,14 @@ public class PurchaseItem {
     private int id;
     private int purchaseId;
     private int productId;
-    private int qty;
+    private int quantity;
     private int purchasePrice;
 
-    public PurchaseItem(int id, int purchaseId, int productId, int qty, int purchasePrice) {
+    public PurchaseItem(int id, int purchaseId, int productId, int quantity, int purchasePrice) {
         this.id = id;
         this.purchaseId = purchaseId;
         this.productId = productId;
-        this.qty = qty;
+        this.quantity = quantity;
         this.purchasePrice = purchasePrice;
     }
 
@@ -25,7 +25,7 @@ public class PurchaseItem {
         return productId;
     }
     public int getQuantity() {
-        return qty;
+        return quantity;
     }
     public int getPurchasePrice() {
         return purchasePrice;
