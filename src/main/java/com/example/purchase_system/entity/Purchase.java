@@ -4,13 +4,13 @@ import java.time.LocalDate;
 
 public class Purchase {
     private int id;
-    private Supplier sup;
+    private int supId;
     private LocalDate date;
     private String note;
 
-    public Purchase(int id, Suplier sup, LocalDate date, String note) {
+    public Purchase(int id, int supId, LocalDate date, String note) {
         this.id = id;
-        this.sup = sup;
+        this.supId = supId;
         this.date = date;
         this.note = note;
     }
@@ -18,8 +18,8 @@ public class Purchase {
     public int getId() {
         return id;
     }
-    public Supplier getSupplier() {
-        return sup;
+    public int getSupplierId() {
+        return supId;
     }
     public LocalDate getDate() {
         return date;
