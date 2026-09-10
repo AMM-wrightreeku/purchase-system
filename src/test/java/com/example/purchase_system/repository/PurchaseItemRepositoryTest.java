@@ -13,6 +13,8 @@ void testSave() {
     Assertions.assertEquals(1, pItemRep.getNextId());
     
     PurchaseItem pItem = pItemRep.save(6, 5, 5, 35);
+    // → 新增一筆後 id = 2 開始
+    Assertions.assertEquals(2, pItemRep.getNextId());
     // → purchaseId 正確
     Assertions.assertEquals(6, pItem.getPurchaseId());
     // → productId 正確
