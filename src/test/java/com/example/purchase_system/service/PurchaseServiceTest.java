@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import com.example.purchase_system.repository.PurchaseRepository;
 import com.example.purchase_system.repository.SupplierRepository;
+import com.example.purchase_system.repository.ProductRepository;
+import com.example.purchase_system.repository.PurchaseItemRepository;
 import com.example.purchase_system.entity.Purchase;
 
 
@@ -15,7 +17,9 @@ public class PurchaseServiceTest {
 void testSupplierExistOrNot() {
     SupplierRepository supRep = new SupplierRepository();
     PurchaseRepository purRep = new PurchaseRepository();
-    PurchaseService purSer = new PurchaseService(supRep, purRep);
+    ProductRepository pro = new ProductRepository();
+    PurchaseItemRepository pItemRep = new PurchaseItemRepository();
+    PurchaseService purSer = new PurchaseService(supRep, purRep, pro, pItemRep);
     supRep.save("BANDAI");
     supRep.save("BANDAI NAMCO");
     Purchase pur = purSer.createPurchase(2, LocalDate.of(2026, 9, 11), "TEST");
@@ -34,7 +38,10 @@ void testSupplierExistOrNot() {
 void testDate() {
     SupplierRepository supRep = new SupplierRepository();
     PurchaseRepository purRep = new PurchaseRepository();
-    PurchaseService purSer = new PurchaseService(supRep, purRep);
+    ProductRepository pro = new ProductRepository();
+    PurchaseItemRepository pItemRep = new PurchaseItemRepository();
+
+    PurchaseService purSer = new PurchaseService(supRep, purRep, pro, pItemRep);
     supRep.save("BANDAI");
     
     // daet null
