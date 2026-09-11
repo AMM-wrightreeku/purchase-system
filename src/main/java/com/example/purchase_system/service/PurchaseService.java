@@ -1,12 +1,13 @@
 package com.example.purchase_system.service;
 
-import com.example.purchase_system.repository.PurchaseRepository;
-import com.example.purchase_system.repository.SupplierRepository;
+import java.time.LocalDate;
+
+import com.example.purchase_system.entity.Purchase;
+import com.example.purchase_system.entity.PurchaseItem;
 import com.example.purchase_system.repository.ProductRepository;
 import com.example.purchase_system.repository.PurchaseItemRepository;
-import com.example.purchase_system.entity.Purchase;
-
-import java.time.LocalDate;
+import com.example.purchase_system.repository.PurchaseRepository;
+import com.example.purchase_system.repository.SupplierRepository;
 
 public class PurchaseService {
     private SupplierRepository supplierRepository;
@@ -31,17 +32,9 @@ public class PurchaseService {
         return purchaseRepository.save(supplierId, date, note);   
     }
 
-    public void addPuuchaseItem()
-    // addPurchaseItem(purchaseId, productId, quantity, purchasePrice)
-
-    //         ↓
-    // Purchase 存在嗎？
-    //         ↓
-    // Product 存在嗎？
-    //         ↓
-    // quantity / price 合法嗎？
-    //         ↓
-    // PurchaseItemRepository.save(...)
-    //         ↓
-    // 回傳 PurchaseItem
+    public PurchaseItem addPurchaseItem(int purchaseId, int productId, int quantity, int purchasePrice) {
+        if(purchaseRepository.findById(purchaseId).isEmpty()) throw new IllegalArgumentException("Purchase does not exist.");
+        if(productRepository.findById(productId).isEmpty()) throw new IllegalArgumentException("Product does not exist.");
+        return pItemRepository.save(purchaseId, productId, quantity, purchasePrice);
+    }
 }
