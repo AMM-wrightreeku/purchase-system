@@ -33,4 +33,15 @@ public class PurchaseItemRepository {
     public Optional<PurchaseItem> findById(int id) {
         return Optional.ofNullable(items.get(id));
     }
+
+    public Optional<PurchaseItem> findSameProduct(int purchaseId, int productId, int purchasePrice) {
+        for(PurchaseItem item : items.values()) {
+            if(purchaseId == item.getPurchaseId() &&
+               productId == item.getProductId() &&
+               purchasePrice == item.getPurchasePrice()) {
+                return Optional.of(item);
+               }
+        }
+        return Optional.empty();
+    }
 }
