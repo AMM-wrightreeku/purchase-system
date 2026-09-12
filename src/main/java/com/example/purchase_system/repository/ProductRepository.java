@@ -8,6 +8,9 @@ import java.util.List;
 
 import com.example.purchase_system.entity.Product;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class ProductRepository {
 
     private Map<Integer, Product> products;

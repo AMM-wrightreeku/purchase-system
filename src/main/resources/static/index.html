@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <title>進貨登錄系統</title>
+
+    <style>
+        body {
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+            line-height: 1.8;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .section {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            margin-top: 0;
+        }
+
+        .form-row {
+            margin-bottom: 10px;
+        }
+
+        .form-row label {
+            display: inline-block;
+            width: 90px;
+        }
+
+        input,
+        select {
+            padding: 6px;
+            min-width: 220px;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        #itemList,
+        #previewArea {
+            background-color: #f7f7f7;
+            padding: 15px;
+            border-radius: 6px;
+            min-height: 30px;
+        }
+
+        .warning {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>進貨登錄系統</h1>
+    <div class="subtitle">進貨登錄雛型</div>
+
+    <div class="section">
+        <h2>1. 進貨基本資料</h2>
+
+        <div class="form-row">
+            <label for="supplierId">供應商</label>
+
+            <select id="supplierId">
+                <option value="">請選擇供應商</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label for="purchaseDate">日期</label>
+            <input type="date" id="purchaseDate">
+        </div>
+
+        <div class="form-row">
+            <label for="note">備註</label>
+            <input type="text" id="note">
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>2. 加入商品</h2>
+
+        <div class="form-row">
+            <label for="barcode">條碼</label>
+            <input type="text" id="barcode">
+        </div>
+
+        <div class="form-row">
+            <label for="productName">商品名稱</label>
+            <input type="text" id="productName">
+        </div>
+
+        <div class="form-row">
+            <label for="quantity">數量</label>
+            <input type="number" id="quantity">
+        </div>
+
+        <div class="form-row">
+            <label for="purchasePrice">進貨價格</label>
+            <input type="number" id="purchasePrice">
+        </div>
+
+        <button id="addItemButton">加入清單</button>
+    </div>
+
+    <div class="section">
+        <h2>3. 目前商品清單</h2>
+
+        <div id="itemList">
+            尚未加入商品
+        </div>
+
+        <br>
+
+        <button id="previewButton">
+            確認進貨內容
+        </button>
+    </div>
+
+    <div class="section">
+        <h2>4. 最終確認</h2>
+
+        <div id="previewArea">
+            尚未產生確認內容
+        </div>
+    </div>
+
+    <p class="warning">
+        ※ 此版本為功能雛型，部分查詢與資料保存功能尚未完成。
+    </p>
+
+
+    <script>
+
+        fetch("/suppliers")
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(suppliers) {
+
+            const supplierSelect =
+                document.getElementById("supplierId");
+
+            for(const supplier of suppliers) {
+
+                supplierSelect.innerHTML +=
+                    "<option value='" +
+                    supplier.id +
+                    "'>" +
+                    supplier.name +
+                    "</option>";
+            }
+        });
+
+
+        // purchase items
+        const items = [];
+
+        const addItemButton =
+            document.getElementById("addItemButton");
+
+
+        addItemButton.addEventListener(
+            "click",
+            function() {
+
+                // barcode
+                const barcode =
+                    document.getElementById("barcode").value;
+
+                // product name
+                const productName =
+                    document.getElementById("productName").value;
+
+                if(productName.trim() == "") {
+                    alert("請輸入商品名稱");
+                    return;
+                }
+
+                // quantity
+                const quantity =
+                    Number(
+                        document.getElementById("quantity").value
+                    );
+
+                if(
+                    !Number.isFinite(quantity) ||
+                    quantity < 1
+                ) {
+                    alert("商品數量錯誤");
+                    return;
+                }
+
+
+                // purchasePrice
+                const purchasePriceText =
+                    document.getElementById("purchasePrice").value;
+
+                if(purchasePriceText.trim() == "") {
+                    alert("請輸入價格");
+                    return;
+                }
+
+                const purchasePrice =
+                    Number(purchasePriceText);
+
+                if(
+                    !Number.isFinite(purchasePrice) ||
+                    purchasePrice < 0
+                ) {
+                    alert("價格錯誤");
+                    return;
+                }
+
+
+                const item = {
+
+                    productId: null,
+
+                    barcode: barcode,
+
+                    productName: productName,
+
+                    quantity: quantity,
+
+                    purchasePrice: purchasePrice
+                };
+
+
+                items.push(item);
+
+
+                const itemList =
+                    document.getElementById("itemList");
+
+                itemList.innerHTML = "";
+
+
+                for(const currentItem of items) {
+
+                    itemList.innerHTML +=
+
+                        "條碼: " +
+                        currentItem.barcode +
+
+                        "　商品: " +
+                        currentItem.productName +
+
+                        "　數量: " +
+                        currentItem.quantity +
+
+                        "　進貨價格: " +
+                        currentItem.purchasePrice +
+
+                        "<br>";
+                }
+            }
+        );
+
+
+
+        // preview item list
+
+        const previewButton =
+            document.getElementById("previewButton");
+
+
+        previewButton.addEventListener(
+            "click",
+            function() {
+
+
+                if(items.length < 1) {
+
+                    alert("商品清單不能空白");
+
+                    return;
+                }
+
+
+                const supplierSelect =
+                    document.getElementById("supplierId");
+
+
+                const supplierId =
+                    supplierSelect.value;
+
+
+                if(supplierId.trim() == "") {
+
+                    alert("廠商不能空白");
+
+                    return;
+                }
+
+
+                const supplierName =
+
+                    supplierSelect
+                    .options[
+                        supplierSelect.selectedIndex
+                    ]
+                    .text;
+
+
+                const purchaseDate =
+
+                    document.getElementById(
+                        "purchaseDate"
+                    ).value;
+
+
+                if(purchaseDate == "") {
+
+                    alert("日期不能空白");
+
+                    return;
+                }
+
+
+                const note =
+
+                    document.getElementById(
+                        "note"
+                    ).value;
+
+
+                const previewArea =
+
+                    document.getElementById(
+                        "previewArea"
+                    );
+
+
+                previewArea.innerHTML =
+
+                    "<strong>進貨內容確認</strong><br><br>" +
+
+                    "供應商: " +
+                    supplierName +
+                    "<br>" +
+
+                    "日期: " +
+                    purchaseDate +
+                    "<br>" +
+
+                    "備註: " +
+                    note +
+                    "<br><br>";
+
+
+                for(const currentItem of items) {
+
+                    previewArea.innerHTML +=
+
+                        "條碼: " +
+                        currentItem.barcode +
+
+                        "　商品: " +
+                        currentItem.productName +
+
+                        "　數量: " +
+                        currentItem.quantity +
+
+                        "　進貨價格: " +
+                        currentItem.purchasePrice +
+
+                        "<br>";
+                }
+
+
+                previewArea.innerHTML +=
+
+                    "<br>" +
+
+                    "<button id='saveButton'>" +
+                    "確認儲存" +
+                    "</button>";
+
+
+                const saveButton =
+
+                    document.getElementById(
+                        "saveButton"
+                    );
+
+
+                saveButton.addEventListener(
+                    "click",
+                    function() {
+
+
+                        const purchaseRequest = {
+
+                            supplierId:
+                                Number(supplierId),
+
+                            purchaseDate:
+                                purchaseDate,
+
+                            note:
+                                note,
+
+                            items:
+                                items
+                        };
+
+
+                        console.log(
+                            purchaseRequest
+                        );
+
+
+                        fetch(
+                            "/purchases",
+                            {
+
+                                method: "POST",
+
+                                headers: {
+
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+
+                                    JSON.stringify(
+                                        purchaseRequest
+                                    )
+                            }
+                        )
+
+                        .then(
+                            function(response) {
+
+                                if(!response.ok) {
+
+                                    throw new Error(
+                                        "儲存失敗"
+                                    );
+                                }
+
+                                return response.json();
+                            }
+                        )
+
+                        .then(
+                            function(data) {
+
+                                console.log(data);
+
+                                alert(
+                                    "進貨資料儲存成功"
+                                );
+
+
+                                // clear all
+                                items.length = 0;
+
+
+                                document
+                                .getElementById(
+                                    "barcode"
+                                )
+                                .value = "";
+
+
+                                document
+                                .getElementById(
+                                    "productName"
+                                )
+                                .value = "";
+
+
+                                document
+                                .getElementById(
+                                    "quantity"
+                                )
+                                .value = "";
+
+
+                                document
+                                .getElementById(
+                                    "purchasePrice"
+                                )
+                                .value = "";
+
+
+                                document
+                                .getElementById(
+                                    "note"
+                                )
+                                .value = "";
+
+
+                                document
+                                .getElementById(
+                                    "itemList"
+                                )
+                                .innerHTML =
+                                    "尚未加入商品";
+
+
+                                document
+                                .getElementById(
+                                    "previewArea"
+                                )
+                                .innerHTML =
+                                    "尚未產生確認內容";
+                            }
+                        )
+
+                        .catch(
+                            function(error) {
+
+                                console.error(error);
+
+                                alert(
+                                    "進貨儲存失敗"
+                                );
+                            }
+                        );
+                    }
+                );
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

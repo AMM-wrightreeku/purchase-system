@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import com.example.purchase_system.entity.Supplier;
 import com.example.purchase_system.repository.SupplierRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SupplierService {
     private SupplierRepository supRep;
 
@@ -24,15 +26,16 @@ public class SupplierService {
         }
         return supRep.save(name);
     }
-
     // 找ID
     public Optional<Supplier> findById(int id) {
         return supRep.findById(id);
     }
-    
-    
     // 找名字
     public List<Supplier> findByName(String name) {
         return supRep.findByName(name);
+    }
+    // findALL
+    public List<Supplier> findAll() {
+        return supRep.findAll();
     }
 }

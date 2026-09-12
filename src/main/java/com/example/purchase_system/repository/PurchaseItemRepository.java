@@ -6,6 +6,9 @@ import java.util.Optional;
 
 import com.example.purchase_system.entity.PurchaseItem;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class PurchaseItemRepository {
     private Map<Integer, PurchaseItem> items;
 

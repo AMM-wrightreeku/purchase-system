@@ -2,7 +2,9 @@ package com.example.purchase_system.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.example.purchase_system.dto.PurchaseItemRequest;
 import com.example.purchase_system.dto.PurchaseRequest;
@@ -13,6 +15,9 @@ import com.example.purchase_system.repository.PurchaseItemRepository;
 import com.example.purchase_system.repository.PurchaseRepository;
 import com.example.purchase_system.repository.SupplierRepository;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class PurchaseService {
     private SupplierRepository supplierRepository;
     private PurchaseRepository purchaseRepository;
@@ -76,15 +81,42 @@ public class PurchaseService {
         List<PurchaseItemRequest> mergedItems = request.getItems();
         if(request.getItems().size() >= 2) mergedItems = mergeSameItems(request.getItems());
         // product ID 補完程序
+        // List<Integer> productIds = new ArrayList<>();
+        // for(PurchaseItemRequest purItemRep : mergedItems) {
+        //     boolean proIdExist = purItemRep.getProductId() != null;
+        //     Integer newId;
+        //     if(proIdExist) newId = purItemRep.getProductId();
+        //     else {
+        //         newId = productRepository.save(purItemRep.getBarcode(), purItemRep.getProductName()).getId();
+        //     }
+        //     productIds.add(newId);
+        // }
         List<Integer> productIds = new ArrayList<>();
-        for(PurchaseItemRequest purItemRep : mergedItems) {
-            boolean proIdExist = purItemRep.getProductId() != null;
-            Integer newId;
-            if(proIdExist) newId = purItemRep.getProductId();
-            else {
-                newId = productRepository.save(purItemRep.getBarcode(), purItemRep.getProductName()).getId();
+
+        for(int i = 0; i < mergedItems.size(); i++) {
+
+            PurchaseItemRequest currentItem = mergedItems.get(i);
+            Integer productId = currentItem.getProductId();
+
+            if(productId == null) {
+
+                for(int j = 0; j < i; j++) {
+
+                    if(isSameProduct(currentItem, mergedItems.get(j))) {
+                        productId = productIds.get(j);
+                        break;
+                    }
+                }
+
+                if(productId == null) {
+                    productId = productRepository.save(
+                        currentItem.getBarcode(),
+                        currentItem.getProductName()
+                    ).getId();
+                }
             }
-            productIds.add(newId);
+
+            productIds.add(productId);
         }
         // 至此，productIds[i] = mergedItems[i] 的 id（空缺補完）
         // 開始建構進貨訂單
@@ -125,6 +157,41 @@ public class PurchaseService {
         }
         return mergedItems;
     }
+
+    // same product
+    private boolean isSameProduct(PurchaseItemRequest itemA, PurchaseItemRequest itemB) {
+        boolean aWithId = itemA.getProductId() != null;
+        boolean bWithId = itemB.getProductId() != null;
+
+        if(aWithId || bWithId) {
+            if(!aWithId || !bWithId) {
+                return false;
+            }
+
+            return itemA.getProductId().equals(itemB.getProductId());
+        }
+
+        boolean aWithCode =
+            itemA.getBarcode() != null &&
+            !itemA.getBarcode().isBlank();
+
+        boolean bWithCode =
+            itemB.getBarcode() != null &&
+            !itemB.getBarcode().isBlank();
+
+        if(aWithCode || bWithCode) {
+            if(!aWithCode || !bWithCode) {
+                return false;
+            }
+
+            return itemA.getBarcode().equals(itemB.getBarcode());
+        }
+
+        return itemA.getProductName().equals(itemB.getProductName());
+    }
+
+
+
     // request item 是否相同？
     private boolean isSameItem(PurchaseItemRequest itemA, PurchaseItemRequest itemB) {
         // 最先比較 價格不同, false

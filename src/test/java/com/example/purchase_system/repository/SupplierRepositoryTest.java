@@ -8,7 +8,7 @@ import com.example.purchase_system.entity.Supplier;
 public class SupplierRepositoryTest {
     @Test
     void testSave() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         Supplier sup1 = supRep.save("Granzon");
         Supplier sup2 = supRep.save("Cyberster");
         Assertions.assertEquals(1, sup1.getId());
@@ -17,7 +17,7 @@ public class SupplierRepositoryTest {
 
     @Test 
     void testDuplicateName() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         supRep.save("NeoGranzon");
         Assertions.assertThrows(IllegalArgumentException.class, 
         () -> supRep.save("NeoGranzon"));
@@ -25,14 +25,14 @@ public class SupplierRepositoryTest {
 
     @Test
     void testFindById() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         supRep.save("NeoGranzon");
         Assertions.assertTrue(supRep.findById(1).isPresent());
     }
 
     @Test
     void testFindByName() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         supRep.save("NeoGranzon");
         supRep.save("Granzon");
 

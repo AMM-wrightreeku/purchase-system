@@ -12,7 +12,7 @@ public class SupplierServiceTest {
     // 2. id / name is correct
     @Test 
     void testCreate() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         SupplierService supSer = new SupplierService(supRep);
         supSer.createSupplier("BANDAI"); // id 1, BANDAI
         supSer.createSupplier("namco"); // id 2, namco
@@ -25,7 +25,7 @@ public class SupplierServiceTest {
     // 2. IllegalArgumentException
     @Test 
     void testDuplicateName() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         SupplierService supSer = new SupplierService(supRep);
         supSer.createSupplier("BANDAI");
         Assertions.assertThrows(IllegalArgumentException.class,
@@ -37,7 +37,7 @@ public class SupplierServiceTest {
     // 2. not exists -> isEmpty()
     @Test 
     void testFindById() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         SupplierService supSer = new SupplierService(supRep);
         supSer.createSupplier("BANDAI");
         Assertions.assertTrue(supSer.findById(1).isPresent());
@@ -50,7 +50,7 @@ public class SupplierServiceTest {
     // 3. null / "" / " " -> empty
     @Test 
     void testFindByName() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         SupplierService supSer = new SupplierService(supRep);
         supSer.createSupplier("BANDAI");
         supSer.createSupplier("BANDAI NAMCO");

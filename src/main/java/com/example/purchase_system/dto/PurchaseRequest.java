@@ -9,6 +9,7 @@ public class PurchaseRequest {
     private String note;
     private List<PurchaseItemRequest> items;
 
+    public PurchaseRequest() {}
     public PurchaseRequest(Integer supplierId, LocalDate purchaseDate, String note
                             , List<PurchaseItemRequest> items) {
         this.supplierId = supplierId;

@@ -7,6 +7,9 @@ import java.util.Optional;
 
 import com.example.purchase_system.entity.Purchase;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class PurchaseRepository {
     private Map<Integer, Purchase> purchases;
 

@@ -1,12 +1,16 @@
 package com.example.purchase_system.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.example.purchase_system.dto.PurchaseItemRequest;
 import com.example.purchase_system.dto.PurchaseRequest;
@@ -23,7 +27,7 @@ import com.example.purchase_system.repository.SupplierRepository;
 public class PurchaseServiceTest {
     @Test
     void testSupplierExistOrNot() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         PurchaseRepository purRep = new PurchaseRepository();
         ProductRepository proRep = new ProductRepository();
         PurchaseItemRepository pItemRep = new PurchaseItemRepository();
@@ -44,7 +48,7 @@ public class PurchaseServiceTest {
 
     @Test
     void testDate() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         PurchaseRepository purRep = new PurchaseRepository();
         ProductRepository proRep = new ProductRepository();
         PurchaseItemRepository pItemRep = new PurchaseItemRepository();
@@ -59,7 +63,7 @@ public class PurchaseServiceTest {
 
     @Test
     void testPurchaseAndProductExistOrNot() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         PurchaseRepository purRep = new PurchaseRepository();
         ProductRepository proRep = new ProductRepository();
         PurchaseItemRepository pItemRep = new PurchaseItemRepository();
@@ -95,7 +99,7 @@ public class PurchaseServiceTest {
 
     @Test 
     void testCreateFullPurchase() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         PurchaseRepository purRep = new PurchaseRepository();
         ProductRepository proRep = new ProductRepository();
         PurchaseItemRepository pItemRep = new PurchaseItemRepository();
@@ -130,7 +134,7 @@ public class PurchaseServiceTest {
 
     @Test
     void testCreateFullPurchaseWithNewProduct() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         PurchaseRepository purRep = new PurchaseRepository();
         ProductRepository proRep = new ProductRepository();
         PurchaseItemRepository pItemRep = new PurchaseItemRepository();
@@ -175,7 +179,7 @@ public class PurchaseServiceTest {
 
     @Test
     void testTheSameProduct() {
-        SupplierRepository supRep = new SupplierRepository();
+        SupplierRepository supRep = new SupplierRepository(false);
         PurchaseRepository purRep = new PurchaseRepository();
         ProductRepository proRep = new ProductRepository();
         PurchaseItemRepository pItemRep = new PurchaseItemRepository();
@@ -204,7 +208,7 @@ public class PurchaseServiceTest {
             null, null, "Gundam", 13, 250);
         PurchaseItemRequest item8 = new PurchaseItemRequest(
             null, null, "Gundam", 13, 250);
-            PurchaseItemRequest item9 = new PurchaseItemRequest(
+        PurchaseItemRequest item9 = new PurchaseItemRequest(
             null, "0083", "Gundam", 13, 250);
 
         PurchaseRequest request = new PurchaseRequest(
@@ -241,5 +245,52 @@ public class PurchaseServiceTest {
         Assertions.assertTrue(savedItem2502.isPresent());
         Assertions.assertEquals(26, savedItem250.get().getQuantity());
         Assertions.assertEquals(13, savedItem2502.get().getQuantity());   
+    }
+    
+    @Test
+    void testSameProduct() {
+        SupplierRepository supRep = new SupplierRepository(false);
+        PurchaseRepository purRep = new PurchaseRepository();
+        ProductRepository proRep = new ProductRepository();
+        PurchaseItemRepository pItemRep = new PurchaseItemRepository();
+        PurchaseService purSer = new PurchaseService(supRep, purRep, proRep, pItemRep);
+        // Supplier sup1 = supRep.save("NAMCO");
+        Supplier sup2 = supRep.save("BANDAI");
+        // Supplier sup3 = supRep.save("BANDAI NAMCO");
+        // Product pro1 = proRep.save("0079", "Gundam");
+        // Product pro2 = proRep.save(null, "BattleSpirits");
+        PurchaseItemRequest item1 = new PurchaseItemRequest(
+            null, "888","Gundam" , 1, 100);
+        PurchaseItemRequest item2 = new PurchaseItemRequest(
+            null, "888","Gundam" , 1, 200);
+        PurchaseRequest request = new PurchaseRequest(
+            sup2.getId(), LocalDate.of(2026, 9, 12), "AAAA", List.of(item1, item2));
+        Purchase result = purSer.createFullPurchase(request);
+
+        assertNotNull(result);
+
+        Product savedProduct = proRep.findByBarcode("888").orElseThrow();
+        assertEquals("Gundam", savedProduct.getName());
+
+        PurchaseItem savedItem1 = pItemRep.findSameProduct(
+            result.getId(),
+            savedProduct.getId(),
+            100
+        ).orElseThrow();
+
+        PurchaseItem savedItem2 = pItemRep.findSameProduct(
+            result.getId(),
+            savedProduct.getId(),
+            200
+        ).orElseThrow();
+
+        assertEquals(savedProduct.getId(), savedItem1.getProductId());
+        assertEquals(savedProduct.getId(), savedItem2.getProductId());
+
+        assertEquals(1, savedItem1.getQuantity());
+        assertEquals(1, savedItem2.getQuantity());
+
+        assertEquals(100, savedItem1.getPurchasePrice());
+        assertEquals(200, savedItem2.getPurchasePrice());
     }
 }
