@@ -4,14 +4,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.purchase_system.dto.PurchaseItemRequest;
+import com.example.purchase_system.dto.PurchaseRequest;
 import com.example.purchase_system.entity.Purchase;
 import com.example.purchase_system.entity.PurchaseItem;
 import com.example.purchase_system.repository.ProductRepository;
 import com.example.purchase_system.repository.PurchaseItemRepository;
 import com.example.purchase_system.repository.PurchaseRepository;
 import com.example.purchase_system.repository.SupplierRepository;
-import com.example.purchase_system.dto.PurchaseRequest;
-import com.example.purchase_system.dto.PurchaseItemRequest;
 
 public class PurchaseService {
     private SupplierRepository supplierRepository;
@@ -71,6 +71,31 @@ public class PurchaseService {
                 }
             }
         }
+        
+        // 前方 check 結束，開始進行資料處理
+        List<PurchaseItemRequest> mergedItems = request.getItems();
+        if(request.getItems().size() >= 2) mergedItems = mergeSameItems(request.getItems());
+        // product ID 補完程序
+        List<Integer> productIds = new ArrayList<>();
+        for(PurchaseItemRequest purItemRep : mergedItems) {
+            boolean proIdExist = purItemRep.getProductId() != null;
+            Integer newId;
+            if(proIdExist) newId = purItemRep.getProductId();
+            else {
+                newId = productRepository.save(purItemRep.getBarcode(), purItemRep.getProductName()).getId();
+            }
+            productIds.add(newId);
+        }
+        // 至此，productIds[i] = mergedItems[i] 的 id（空缺補完）
+        // 開始建構進貨訂單
+        Purchase purchase = purchaseRepository.save(request.getSupplierId(), request.getPurchaseDate(), request.getNote());
+        for(int i = 0; i < mergedItems.size(); i++) {
+            pItemRepository.save(purchase.getId()
+                                , productIds.get(i)
+                                , mergedItems.get(i).getQuantity()
+                                , mergedItems.get(i).getPurchasePrice());
+        }
+        return purchase;
     }
 
     // 這個方法只使用在 傳進來的 items.size() >=2 的狀況，<=1的狀況不需要重新整理沒有意義
@@ -91,9 +116,8 @@ public class PurchaseService {
                         , mergedItems.get(j).getPurchasePrice());
                     mergedItems.set(j, newer);
                     found = true;
-                    break;  // 找到了，相加了，加入新的刪除舊的，打破 mergedItems 比較迴圈
+                    break;
                 }
-                // 整個 mergedItems 都找不到相同的，迴圈的最後一輪
             }
             if(!found) {
                 mergedItems.add(items.get(i));
