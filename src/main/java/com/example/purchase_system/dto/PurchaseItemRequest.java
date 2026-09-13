@@ -8,9 +8,9 @@ public class PurchaseItemRequest {
     private int purchasePrice;
 
     public PurchaseItemRequest() {}
-    
-    public PurchaseItemRequest(Integer productId, String barcode, String productName
-                                , int quantity, int purchasePrice) {
+    public PurchaseItemRequest(
+        Integer productId, String barcode, String productName
+        , int quantity, int purchasePrice) {
         this.productId = productId;
         this.barcode = barcode;
         this.productName = productName;

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.example.purchase_system.entity.Purchase;
+import com.example.purchase_system.util.IdGenerator;
 
 import org.springframework.stereotype.Repository;
 
@@ -17,18 +18,10 @@ public class PurchaseRepository {
         purchases = new LinkedHashMap<>();
     }
 
-    // 產生 id
-    public int getNextId() {
-        int maxId = 0;
-        for(int id : purchases.keySet()) {
-            if(id > maxId) maxId = id;
-        }
-        return maxId +1;
-    }
-    
     public Purchase save(int supplierId, LocalDate date, String note) {
         if(date == null) throw new IllegalArgumentException("Date cannot be blank.");
-        int newId = getNextId();
+        // 呼叫 util 直接找 ID
+        int newId = IdGenerator.getNextId(purchases.keySet());
         Purchase purchase = new Purchase(newId, supplierId, date, note);
         purchases.put(newId, purchase);
         return purchase;

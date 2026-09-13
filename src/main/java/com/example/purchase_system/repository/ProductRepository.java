@@ -1,34 +1,21 @@
 package com.example.purchase_system.repository;
-
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.example.purchase_system.entity.Product;
 
 import org.springframework.stereotype.Repository;
 
+import com.example.purchase_system.entity.Product;
+import com.example.purchase_system.util.IdGenerator;
+
 @Repository
 public class ProductRepository {
-
     private Map<Integer, Product> products;
 
     public ProductRepository() {
         products = new LinkedHashMap<>();
-    }
-
-    public int getNextId() {
-        int maxId = 0;
-
-        for (int id : products.keySet()) {
-            if (id > maxId) {
-                maxId = id;
-            }
-        }
-
-        return maxId + 1;
     }
 
     public Product save(String barcode, String name) {
@@ -40,8 +27,8 @@ public class ProductRepository {
         if (barcode != null && findByBarcode(barcode).isPresent()) {
             throw new IllegalArgumentException("Barcode already exists");
         }
-
-        int id = getNextId();
+        // 呼叫 util 直接找 ID
+        int id = IdGenerator.getNextId(products.keySet());
 
         Product product = new Product(id, barcode, name);
 

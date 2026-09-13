@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.example.purchase_system.entity.Supplier;
+import com.example.purchase_system.util.IdGenerator;
 
 import org.springframework.stereotype.Repository;
 import java.io.IOException;
@@ -30,19 +31,6 @@ public class SupplierRepository {
         }
     }
 
-    public int getNextId() {
-
-        int maxId = 0;
-
-        for (int id : suppliers.keySet()) {
-            if (id > maxId) {
-                maxId = id;
-            }
-        }
-
-        return maxId + 1;
-    }
-
     public Supplier save(String name) {
 
         if (name == null || name.isBlank()) {
@@ -56,8 +44,8 @@ public class SupplierRepository {
                 "The supplier name already exists"
             );
         }
-
-        int id = getNextId();
+        // 呼叫 util 直接找 ID
+        int id = IdGenerator.getNextId(suppliers.keySet());
 
         Supplier sup = new Supplier(id, name);
 

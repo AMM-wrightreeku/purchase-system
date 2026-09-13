@@ -10,11 +10,8 @@ public class PurchaseItemRepositoryTest {
     void testSave() {
         PurchaseItemRepository pItemRep = new PurchaseItemRepository();
         // → id 是否從 1 開始
-        Assertions.assertEquals(1, pItemRep.getNextId());
-        
         PurchaseItem pItem = pItemRep.save(6, 5, 5, 35);
-        // → 新增一筆後 id = 2 開始
-        Assertions.assertEquals(2, pItemRep.getNextId());
+        Assertions.assertEquals(1, pItem.getId());
         // → purchaseId 正確
         Assertions.assertEquals(6, pItem.getPurchaseId());
         // → productId 正確

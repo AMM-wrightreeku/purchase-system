@@ -4,7 +4,6 @@ public class SupplierRequest {
     private String name;
 
     public SupplierRequest() {}
-
     public SupplierRequest(String name) {
         this.name = name;
     }
