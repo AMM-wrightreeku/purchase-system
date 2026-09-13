@@ -15,14 +15,10 @@ public class ProductService {
 
     // 創建商品
     public Product createProduct(String barcode, String name) {
-        if(name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name cannot be blank.");
-        }
-        if(barcode != null && productRep.findByBarcode(barcode).isPresent()) {
-            throw new IllegalArgumentException("Barcode already exists");
-        } else {
-            return productRep.save(barcode, name);
-        }
+        // check
+        if(name == null || name.isBlank()) throw new IllegalArgumentException("Name cannot be blank.");
+        if(barcode != null && productRep.findByBarcode(barcode).isPresent()) throw new IllegalArgumentException("Barcode already exists");
+        return productRep.save(barcode, name);
     }
 
     // ID 找商品

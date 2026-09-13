@@ -3,9 +3,10 @@ package com.example.purchase_system.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
 import com.example.purchase_system.entity.Supplier;
 import com.example.purchase_system.repository.SupplierRepository;
-import org.springframework.stereotype.Service;
 
 @Service
 public class SupplierService {
@@ -17,13 +18,8 @@ public class SupplierService {
 
     // 新增供應商
     public Supplier createSupplier(String name) {
-        if(name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name cannot be blank.");
-        }
-        
-        if(supRep.findByExactName(name).isPresent()) {
-            throw new IllegalArgumentException("Name already exists.");
-        }
+        if(name == null || name.isBlank()) throw new IllegalArgumentException("Name cannot be blank.");
+        if(supRep.findByExactName(name).isPresent()) throw new IllegalArgumentException("Name already exists.");
         return supRep.save(name);
     }
     // 找ID
