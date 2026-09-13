@@ -4,10 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+
 import com.example.purchase_system.entity.PurchaseItem;
 import com.example.purchase_system.util.IdGenerator;
-
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class PurchaseItemRepository {
@@ -18,8 +18,10 @@ public class PurchaseItemRepository {
     }
 
     public PurchaseItem save(int purchaseId, int productId, int quantity, int purchasePrice) {
+        // check
         if(quantity < 1) throw new IllegalArgumentException("Invalid quantity.");
         if(purchasePrice < 0) throw new IllegalArgumentException("Invalid price.");
+        // main motion
         // 呼叫 util 直接找 ID
         int newId = IdGenerator.getNextId(items.keySet());
         PurchaseItem purItem = new PurchaseItem(newId, purchaseId, productId, quantity, purchasePrice);

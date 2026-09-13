@@ -5,10 +5,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+
 import com.example.purchase_system.entity.Purchase;
 import com.example.purchase_system.util.IdGenerator;
-
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class PurchaseRepository {
@@ -19,7 +19,9 @@ public class PurchaseRepository {
     }
 
     public Purchase save(int supplierId, LocalDate date, String note) {
+        // check
         if(date == null) throw new IllegalArgumentException("Date cannot be blank.");
+        // main motion
         // 呼叫 util 直接找 ID
         int newId = IdGenerator.getNextId(purchases.keySet());
         Purchase purchase = new Purchase(newId, supplierId, date, note);

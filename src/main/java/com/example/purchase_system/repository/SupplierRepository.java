@@ -1,19 +1,19 @@
 package com.example.purchase_system.repository;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+
 import com.example.purchase_system.entity.Supplier;
 import com.example.purchase_system.util.IdGenerator;
-
-import org.springframework.stereotype.Repository;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 @Repository
 public class SupplierRepository {
@@ -23,7 +23,6 @@ public class SupplierRepository {
     public SupplierRepository() {
         this(true);
     }
-
     public SupplierRepository(boolean loadCsv) {
         suppliers = new LinkedHashMap<>();
         if(loadCsv) {
@@ -32,25 +31,14 @@ public class SupplierRepository {
     }
 
     public Supplier save(String name) {
-
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException(
-                "Name cannot be blank."
-            );
-        }
-
-        if (findByExactName(name).isPresent()) {
-            throw new IllegalArgumentException(
-                "The supplier name already exists"
-            );
-        }
+        //check
+        if (name == null || name.isBlank()) throw new IllegalArgumentException("Name cannot be blank.");
+        if (findByExactName(name).isPresent()) throw new IllegalArgumentException("The supplier name already exists");
+        // main motion
         // 呼叫 util 直接找 ID
         int id = IdGenerator.getNextId(suppliers.keySet());
-
         Supplier sup = new Supplier(id, name);
-
         suppliers.put(id, sup);
-
         return sup;
     }
 
@@ -59,10 +47,10 @@ public class SupplierRepository {
     }
 
     public Optional<Supplier> findByExactName(String name) {
+        if(name == null || name.isBlank()) return Optional.empty();
 
         for (Supplier sup : suppliers.values()) {
-            if (sup.getName() != null
-                    && sup.getName().equals(name)) {
+            if (sup.getName() != null && name.equals(sup.getName())) {
                 return Optional.of(sup);
             }
         }
@@ -71,12 +59,8 @@ public class SupplierRepository {
     }
 
     public List<Supplier> findByName(String name) {
-
         List<Supplier> result = new ArrayList<>();
-
-        if (name == null || name.isBlank()) {
-            return result;
-        }
+        if(name == null || name.isBlank()) return result;
 
         for (Supplier sup : suppliers.values()) {
             if (sup.getName().contains(name)) {
@@ -86,7 +70,7 @@ public class SupplierRepository {
 
         return result;
     }
-
+    // 讀取 .csv
     private void loadSuppliersFromCsv() {
         Path path = Path.of("data", "supplierList.csv");
         try {
