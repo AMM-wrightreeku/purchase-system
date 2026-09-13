@@ -15,16 +15,8 @@ public class Purchase {
         this.note = note;
     }
 
-    public int getId() {
-        return id;
-    }
-    public int getSupplierId() {
-        return supplierId;
-    }
-    public LocalDate getDate() {
-        return date;
-    }
-    public String getNote() {
-        return note;
-    }
+    public int getId() {return id;}
+    public int getSupplierId() {return supplierId;}
+    public LocalDate getDate() {return date;}
+    public String getNote() {return note;}
 }

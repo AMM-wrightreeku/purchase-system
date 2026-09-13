@@ -15,19 +15,9 @@ public class PurchaseItem {
         this.purchasePrice = purchasePrice;
     }
 
-    public int getId() {
-        return id;
-    }
-    public int getPurchaseId() {
-        return purchaseId;
-    }
-    public int getProductId() {
-        return productId;
-    }
-    public int getQuantity() {
-        return quantity;
-    }
-    public int getPurchasePrice() {
-        return purchasePrice;
-    }
+    public int getId() {return id;}
+    public int getPurchaseId() {return purchaseId;}
+    public int getProductId() {return productId;}
+    public int getQuantity() {return quantity;}
+    public int getPurchasePrice() {return purchasePrice;}
 }

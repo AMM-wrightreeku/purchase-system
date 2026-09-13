@@ -11,15 +11,7 @@ public class Product {
         this.name = name;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getBarcode() {
-        return barcode;
-    }
-
-    public String getName() {
-        return name;
-    }
+    public int getId() {return id;}
+    public String getBarcode() {return barcode;}
+    public String getName() {return name;}
 }
