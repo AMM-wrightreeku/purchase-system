@@ -116,8 +116,8 @@
         </div>
 
         <div class="form-row">
-            <label for="purchasePrice">進貨價格</label>
-            <input type="number" id="purchasePrice">
+            <label for="taotalPrice">進貨價格</label>
+            <input type="number" id="totalPrice">
         </div>
 
         <button id="addItemButton">加入清單</button>
@@ -212,21 +212,21 @@
                 }
 
 
-                // purchasePrice
-                const purchasePriceText =
-                    document.getElementById("purchasePrice").value;
+                // totlaPrice
+                const totalPriceText =
+                    document.getElementById("totalPrice").value;
 
-                if(purchasePriceText.trim() == "") {
+                if(totalPriceText.trim() == "") {
                     alert("請輸入價格");
                     return;
                 }
 
-                const purchasePrice =
-                    Number(purchasePriceText);
+                const totalPrice =
+                    Number(totalPriceText);
 
                 if(
-                    !Number.isFinite(purchasePrice) ||
-                    purchasePrice < 0
+                    !Number.isFinite(totalPrice) ||
+                    totalPrice < 0
                 ) {
                     alert("價格錯誤");
                     return;
@@ -243,7 +243,7 @@
 
                     quantity: quantity,
 
-                    purchasePrice: purchasePrice
+                    totalPrice: totalPrice
                 };
 
 
@@ -270,7 +270,7 @@
                         currentItem.quantity +
 
                         "　進貨價格: " +
-                        currentItem.purchasePrice +
+                        currentItem.totalPrice +
 
                         "<br>";
                 }
@@ -383,7 +383,7 @@
                         currentItem.quantity +
 
                         "　進貨價格: " +
-                        currentItem.purchasePrice +
+                        currentItem.totalPrice +
 
                         "<br>";
                 }
@@ -502,7 +502,7 @@
 
                                 document
                                 .getElementById(
-                                    "purchasePrice"
+                                    "totalPrice"
                                 )
                                 .value = "";
 

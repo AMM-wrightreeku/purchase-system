@@ -18,8 +18,8 @@ public class PurchaseItemRepositoryTest {
         Assertions.assertEquals(5, pItem.getProductId());
         // → quantity 正確
         Assertions.assertEquals(5, pItem.getQuantity());
-        // → purchasePrice 正確
-        Assertions.assertEquals(35, pItem.getPurchasePrice());
+        // → totalPrice 正確
+        Assertions.assertEquals(35, pItem.getTotalPrice());
     }
 
     @Test
@@ -36,12 +36,12 @@ public class PurchaseItemRepositoryTest {
     @Test
     void testInvalidPrice() {
         PurchaseItemRepository pItemRep = new PurchaseItemRepository();
-        // → purchasePrice = -1 → Exception
+        // → tota;Price = -1 → Exception
         Assertions.assertThrows(IllegalArgumentException.class,
         () -> pItemRep.save(6, 5, 5, -1));
-        // → purchasePrice = 0 → 可以成功
+        // → totalPrice = 0 → 可以成功
         PurchaseItem pItem = pItemRep.save(6, 5, 5, 0);
-        Assertions.assertEquals(0, pItem.getPurchasePrice());
+        Assertions.assertEquals(0, pItem.getTotalPrice());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class PurchaseItemRepositoryTest {
         PurchaseItem testPItem = pItemRep.findSameProduct(1, 2, 100).get();
         Assertions.assertEquals(1, testPItem.getPurchaseId());
         Assertions.assertEquals(2, testPItem.getProductId());
-        Assertions.assertEquals(100, testPItem.getPurchasePrice());
+        Assertions.assertEquals(100, testPItem.getTotalPrice());
         // case2 empty , 1, 2, 999
         Assertions.assertTrue(pItemRep.findSameProduct(1, 2, 999).isEmpty());
         // case3 empty , 999, 2, 100

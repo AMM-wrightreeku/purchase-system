@@ -5,19 +5,19 @@ public class PurchaseItem {
     private int purchaseId;
     private int productId;
     private int quantity;
-    private int purchasePrice;
+    private int totalPrice;
 
-    public PurchaseItem(int id, int purchaseId, int productId, int quantity, int purchasePrice) {
+    public PurchaseItem(int id, int purchaseId, int productId, int quantity, int totalPrice) {
         this.id = id;
         this.purchaseId = purchaseId;
         this.productId = productId;
         this.quantity = quantity;
-        this.purchasePrice = purchasePrice;
+        this.totalPrice = totalPrice;
     }
 
     public int getId() {return id;}
     public int getPurchaseId() {return purchaseId;}
     public int getProductId() {return productId;}
     public int getQuantity() {return quantity;}
-    public int getPurchasePrice() {return purchasePrice;}
+    public int getTotalPrice() {return totalPrice;}
 }

@@ -5,17 +5,17 @@ public class PurchaseItemRequest {
     private String barcode;
     private String productName;
     private int quantity;
-    private int purchasePrice;
+    private int totalPrice;
 
     public PurchaseItemRequest() {}
     public PurchaseItemRequest(
         Integer productId, String barcode, String productName
-        , int quantity, int purchasePrice) {
+        , int quantity, int totlaPrice) {
         this.productId = productId;
         this.barcode = barcode;
         this.productName = productName;
         this.quantity = quantity;
-        this.purchasePrice = purchasePrice;
+        this.totalPrice = totlaPrice;
         
     }
 
@@ -23,5 +23,5 @@ public class PurchaseItemRequest {
     public String getBarcode() {return barcode;}
     public String getProductName() {return productName;}
     public int getQuantity() {return quantity;}
-    public int getPurchasePrice() {return purchasePrice;}
+    public int getTotalPrice() {return totalPrice;}
 }
