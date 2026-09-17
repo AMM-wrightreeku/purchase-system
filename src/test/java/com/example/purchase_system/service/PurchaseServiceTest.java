@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,54 @@ import com.example.purchase_system.repository.SupplierRepository;
 
 
 public class PurchaseServiceTest {
+    private SupplierRepository supRep;
+    private PurchaseRepository purRep;
+    private ProductRepository proRep;
+    private PurchaseItemRepository pItemRep;
+    private PurchaseService purSer;
+    private List<PurchaseItemRequest> items;
+    @BeforeEach 
+    void setUp() {
+        supRep = new SupplierRepository(false);
+        purRep = new PurchaseRepository();
+        proRep = new ProductRepository();
+        pItemRep = new PurchaseItemRepository();
+        purSer = new PurchaseService(supRep, purRep, proRep, pItemRep);
+        items = List.of(new PurchaseItemRequest(9, "65536", "NeoGranzon", 3, 90000));
+
+    }
+    @Test
+    void createRequestCheckNullRequest() {
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> purSer.createFullPurchase(null));
+    }
+    @Test
+    void createRequestCheckNullSupplierId() {
+        PurchaseRequest requestNullSupplierId = new PurchaseRequest(null, LocalDate.of(2026, 9, 17), "TEST1", items);
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> purSer.createFullPurchase(requestNullSupplierId));
+    }
+    @Test
+    void createRequestCheckNullDate() {
+    PurchaseRequest requestNullDate = new PurchaseRequest(3, null, "TEST2", items);
+    Assertions.assertThrows(IllegalArgumentException.class,
+        () -> purSer.createFullPurchase(requestNullDate));
+  
+    }
+    @Test
+    void createRequestCheckNullItems() {
+    PurchaseRequest requestNullItems = new PurchaseRequest(3, LocalDate.of(2026, 9, 17), "TEST3", null);
+    Assertions.assertThrows(IllegalArgumentException.class,
+        () -> purSer.createFullPurchase(requestNullItems));
+    }
+    @Test
+    void createRequestCheckEmptyItems() {
+        PurchaseRequest requestEmptyItems = new PurchaseRequest(3, LocalDate.of(2026, 9, 17), "TEST4", List.of());
+        Assertions.assertThrows(IllegalArgumentException.class,
+        () -> purSer.createFullPurchase(requestEmptyItems));
+    }
+
+
     // @Test
     // void testSupplierExistOrNot() {
     //     SupplierRepository supRep = new SupplierRepository(false);
