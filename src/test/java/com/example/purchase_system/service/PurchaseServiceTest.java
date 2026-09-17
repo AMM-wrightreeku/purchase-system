@@ -2,21 +2,14 @@ package com.example.purchase_system.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 import com.example.purchase_system.dto.PurchaseItemRequest;
 import com.example.purchase_system.dto.PurchaseRequest;
-import com.example.purchase_system.entity.Product;
-import com.example.purchase_system.entity.Purchase;
-import com.example.purchase_system.entity.PurchaseItem;
-import com.example.purchase_system.entity.Supplier;
 import com.example.purchase_system.repository.ProductRepository;
 import com.example.purchase_system.repository.PurchaseItemRepository;
 import com.example.purchase_system.repository.PurchaseRepository;
@@ -30,6 +23,7 @@ public class PurchaseServiceTest {
     private PurchaseItemRepository pItemRep;
     private PurchaseService purSer;
     private List<PurchaseItemRequest> items;
+    private PurchaseRequest request;
     @BeforeEach 
     void setUp() {
         supRep = new SupplierRepository(false);
@@ -37,8 +31,14 @@ public class PurchaseServiceTest {
         proRep = new ProductRepository();
         pItemRep = new PurchaseItemRepository();
         purSer = new PurchaseService(supRep, purRep, proRep, pItemRep);
-        items = List.of(new PurchaseItemRequest(9, "65536", "NeoGranzon", 3, 90000));
-
+        // supplier id1
+        supRep.save("BANDAI");
+        // Product id1
+        proRep.save("65536", "NeoGranzon");
+        // request
+        items = new ArrayList<>();
+        items.add(new PurchaseItemRequest(1, "65535", "Granzon", 3, 90000));
+        request = new PurchaseRequest(1, LocalDate.of(2026, 9, 18), "Normal Request", items);
     }
     @Test
     void createRequestCheckNullRequest() {
@@ -70,6 +70,52 @@ public class PurchaseServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class,
         () -> purSer.createFullPurchase(requestEmptyItems));
     }
+    @Test
+    void createRequestDataCheckUnexistSupplierId() {
+        PurchaseRequest requestUnexistSupplierId = new PurchaseRequest(999, LocalDate.of(2026, 9, 17), "TEST4", items);
+        Assertions.assertThrows(IllegalArgumentException.class,
+        () -> purSer.createFullPurchase(requestUnexistSupplierId));
+    }
+    @Test
+    void createRequestDataCheckNullItem() {
+        // List<PurchaseItemRequest> nullItems = new ArrayList<>();
+        items = new ArrayList<PurchaseItemRequest>();
+        items.add(null);
+        PurchaseRequest requestNullItem = new PurchaseRequest(1, LocalDate.of(2026, 9, 17), "TEST4", items);
+        Assertions.assertThrows(IllegalArgumentException.class,
+        () -> purSer.createFullPurchase(requestNullItem));
+    }
+    @Test
+    void createRequestDataCheckWrongQty() {
+        items.add(new PurchaseItemRequest(1, "RX79", "Gundam", 0, 1000));
+        Assertions.assertThrows(IllegalArgumentException.class,
+        () -> purSer.createFullPurchase(request));
+    }
+    @Test
+    void createRequestDataCheckWrongPrice() {
+        items.add(new PurchaseItemRequest(1, "RX80", "GundamGP03", 10, -83));
+        Assertions.assertThrows(IllegalArgumentException.class,
+        () -> purSer.createFullPurchase(request));
+    }
+
+//  request.getItems()) {
+// if(item == null ) {throw new IllegalArgumentException("Purchase Item is null.");}
+    //         if(item.getQuantity() < 1) {throw new IllegalArgumentException(item.getProductName() + " quantity invalid.");}
+    //         if(item.getTotalPrice() < 0) {throw new IllegalArgumentException(item.getProductName() + " price invalid.");}
+    //         // Product ID Check            
+    //         if(item.getProductId() != null) {
+    //             if(productRepository.findById(item.getProductId()).isEmpty()) {
+    //                 throw new IllegalArgumentException("Product does not exist.");
+    //             }
+    //         } else {
+    //             if(item.getProductName() == null || item.getProductName().isBlank()) {throw new IllegalArgumentException("Product Name cannot be blank.");}
+    //             if(item.getBarcode() != null && !item.getBarcode().isBlank()
+    //                 && productRepository.findByBarcode(item.getBarcode()).isPresent()) {
+    //                 throw new IllegalArgumentException("Product Barcode already exists.");
+
+
+
+
 
 
     // @Test
