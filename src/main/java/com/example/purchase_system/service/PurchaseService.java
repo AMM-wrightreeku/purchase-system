@@ -134,7 +134,7 @@ public class PurchaseService {
     }
     // 新增完整訂單
     public Purchase createFullPurchase(PurchaseRequest request) {
-// check
+        // check
         checkRequest(request);
         checkRequestData(request);
         // fill up data
