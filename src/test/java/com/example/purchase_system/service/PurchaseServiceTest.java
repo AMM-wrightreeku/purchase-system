@@ -97,24 +97,64 @@ public class PurchaseServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class,
         () -> purSer.createFullPurchase(request));
     }
+    @Test
+    void createRequestDataCheckWrongProductId() {
+        items.add(new PurchaseItemRequest(999, "RX93", "UNICORN", 1, 103));
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> purSer.createFullPurchase(request));
+    }
+    @Test
+    void createRequestDataCheckNewProductNullName() {
+        items.add(new PurchaseItemRequest(null, "7983", null, 1, 103));
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> purSer.createFullPurchase(request));
+    }
+    @Test
+    void createRequestDataCheckNewProductNoName() {
+        items.add(new PurchaseItemRequest(null, "7983", "  ", 1, 103));
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> purSer.createFullPurchase(request));
+    }
+    @Test
+    void createRequestDataCheckNewProductButExist() {
+        items.add(new PurchaseItemRequest(null, "65536", "GP02A", 1, 103));
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> purSer.createFullPurchase(request));
+    }
+    // @Test
+    // void fillUpAllProductIds() {
+    //     items.add(new PurchaseItemRequest(null, "RX79", "GUNDAM", 1, 79));
+    //     // items.add(new PurchaseItemRequest(null, "RX93", "UNICORN", 1, 103));
+    //     // items.add(new PurchaseItemRequest(null, "GNT0000", "Double O Quantum", 100, 1000));
+    //     purSer.createFullPurchase(request);
+    //     Assertions.assertEquals(2, pItemRep.find)
+        
+    // }
+// // 補完 purchaseItem 的所有 productId
+//     private List<Integer> getOrCreateProductIds(PurchaseRequest request) {
+//         List<Integer> productIds = new ArrayList<>();
+//         for(int i = 0; i < request.getItems().size(); i++) {
+//             PurchaseItemRequest currentItem = request.getItems().get(i);
+//             Integer productId = currentItem.getProductId();
 
-//  request.getItems()) {
-// if(item == null ) {throw new IllegalArgumentException("Purchase Item is null.");}
-    //         if(item.getQuantity() < 1) {throw new IllegalArgumentException(item.getProductName() + " quantity invalid.");}
-    //         if(item.getTotalPrice() < 0) {throw new IllegalArgumentException(item.getProductName() + " price invalid.");}
-    //         // Product ID Check            
-    //         if(item.getProductId() != null) {
-    //             if(productRepository.findById(item.getProductId()).isEmpty()) {
-    //                 throw new IllegalArgumentException("Product does not exist.");
-    //             }
-    //         } else {
-    //             if(item.getProductName() == null || item.getProductName().isBlank()) {throw new IllegalArgumentException("Product Name cannot be blank.");}
-    //             if(item.getBarcode() != null && !item.getBarcode().isBlank()
-    //                 && productRepository.findByBarcode(item.getBarcode()).isPresent()) {
-    //                 throw new IllegalArgumentException("Product Barcode already exists.");
-
-
-
+//             if(productId == null) {
+//                 for(int j = 0; j < i; j++) {
+//                     if(isSameProduct(currentItem, request.getItems().get(j))) {
+//                         productId = productIds.get(j);
+//                         break;
+//                     }
+//                 }
+//                 if(productId == null) {
+//                     productId = productRepository.save(
+//                         currentItem.getBarcode(),
+//                         currentItem.getProductName()
+//                     ).getId();
+//                 }
+//             }
+//             productIds.add(productId);
+//         }
+//         return productIds;
+//     }
 
 
 
