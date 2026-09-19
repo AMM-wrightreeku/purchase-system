@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.purchase_system.entity.Supplier;
 import com.example.purchase_system.util.IdGenerator;
+import com.example.purchase_system.util.CsvFileUtil;
 
 @Repository
 public class SupplierRepository {
@@ -26,7 +28,7 @@ public class SupplierRepository {
     public SupplierRepository(boolean loadCsv) {
         suppliers = new LinkedHashMap<>();
         if(loadCsv) {
-            loadSuppliersFromCsv();
+            loadSupplierFromCsv();
         }
     }
 
@@ -38,6 +40,7 @@ public class SupplierRepository {
         // 呼叫 util 直接找 ID
         int id = IdGenerator.getNextId(suppliers.keySet());
         Supplier sup = new Supplier(id, name);
+        saveSupplierToCsv(sup);
         suppliers.put(id, sup);
         return sup;
     }
@@ -70,23 +73,39 @@ public class SupplierRepository {
 
         return result;
     }
-    // 讀取 .csv
-    private void loadSuppliersFromCsv() {
-        Path path = Path.of("data", "supplierList.csv");
+    // 儲存 .csv
+    private void saveSupplierToCsv(Supplier supplier) {
+        Path path = Path.of("data"
+                            , "supplierList.csv");
         try {
-            List<String> lines = Files.readAllLines(
-                path,
-                StandardCharsets.UTF_8
+            String line = "CREATE,"
+                            + supplier.getId() + ","
+                            + supplier.getName()
+                            + System.lineSeparator();
+            Files.writeString(path, line, StandardCharsets.UTF_8
+                                , StandardOpenOption.APPEND
             );
+        } catch(IOException e) {
+            throw new IllegalStateException("Cannot save supplierList.csv", e);
+        }
+    }
+    // 讀取 .csv
+    private void loadSupplierFromCsv() {
+        try {
+            List<String> lines = CsvFileUtil.loadLines("data"
+                                                        , "supplierList.csv"
+                                                        , "STATUS,ID,NAME");
             for(int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 if(line.isBlank()) {continue;}
-                String[] columns = line.split(",",2); // csv 靠 , 分隔屬性
-                if(columns.length < 2) {throw new IllegalStateException(
+                String[] columns = line.split(",",3); // csv 靠 , 分隔屬性
+                if(columns.length < 3) {throw new IllegalStateException(
                 "supplierList.csv format error at line " + (i+1));
                 }
-                int id = Integer.parseInt(columns[0].trim());
-                String name = columns[1].trim();
+                String status = columns[0].trim();
+                if(!"CREATE".equals(status)) {continue;}
+                int id = Integer.parseInt(columns[1].trim());
+                String name = columns[2].trim();
                 Supplier supplier = new Supplier(id, name);
                 suppliers.put(id, supplier);
             }          

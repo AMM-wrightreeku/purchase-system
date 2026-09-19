@@ -7,7 +7,7 @@
 - 可以從 CSV 讀取既有廠商資料。
 - 可以建立進貨訂單、商品及進貨商品資料。
 <!-- 目前新增資料僅保存在記憶體中，尚未檔案持久化。 -->
-- Product, Purchase, PurchaseItem 已支援 CSV 持久化：
+- Product, Purchase, PurchaseItem, Supplier 已支援 CSV 持久化：
   - 新增 Product 時寫入 CSV
   - 程式啟動時從 CSV 讀取 Product 資料
   - 程式重新起動後可以繼續使用既有資料及接續 ID
@@ -161,9 +161,10 @@ return Purchase
 ## 8. 後續開發
 
 ### 持久化
-- Purchase CSV 持久化。
+<!-- - Purchase CSV 持久化。
 - PurchaseItem CSV 持久化。
-- Supplier 新增資料的持久化。
+- Supplier 新增資料的持久化。 -->
+--- 進度 ---
 - 未來評估 MySQL 等其他資料儲存方式。
 - 視需要將 Repository 介面化並抽象實作，使 Service 不依賴實際儲存技術。
 

@@ -19,4 +19,5 @@ public class CsvFileUtil {
         }
         return Files.readAllLines(path, StandardCharsets.UTF_8);
     }
+    
 }
