@@ -12,7 +12,7 @@
   - 程式啟動時從 CSV 讀取 Product 資料
   - 程式重新起動後可以繼續使用既有資料及接續 ID
 
-Purchae, PurchaseItem 仍然保存在記憶體中，尚未持久化
+Purchase, PurchaseItem 仍然保存在記憶體中，尚未持久化
 
 ## 3. 系統架構
 Browser / JavaScript
@@ -87,7 +87,7 @@ ProductRepository
 檢查 productList.csv
 ↓
 不存在 → 建立 data 目錄及 CSV
-↓          ↓
+↓ 
 讀取 CREATE 紀錄
 ↓
 建立 Product
@@ -106,7 +106,8 @@ ProductRepository.save(...)
 更新 Map
 ↓
 return Product
-// CSV 持久化成功才會將新增資料視為 Repository 儲存成功
+
+CSV 持久化成功才會將新增資料視為 Repository 儲存成功
 
 ## 6. 建立一筆進貨單的流程
 Browser
@@ -142,7 +143,7 @@ PurchaseItemRepository.save(
 ↓
 return Purchase
 
-## 7. 尚未完成
+## 7. 2026/09/27 預定最低可用版本目標
 
 1. Purchase 可以持久化儲存，讓實際使用者開始保存進貨資料。
 2. Purchase 可以查詢持久化資料，最低支援：

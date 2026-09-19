@@ -15,6 +15,8 @@ import org.springframework.stereotype.Repository;
 
 import com.example.purchase_system.entity.Product;
 import com.example.purchase_system.util.IdGenerator;
+import com.example.purchase_system.util.CsvFileUtil;
+
 
 @Repository
 public class ProductRepository {
@@ -84,20 +86,14 @@ public class ProductRepository {
                                 , StandardOpenOption.APPEND
             );
         } catch(IOException e) {
-            throw new IllegalArgumentException("Cannot save productList.csv", e);
+            throw new IllegalStateException("Cannot save productList.csv", e);
         }
     }
 
     private void loadProductFromCsv() {
-        Path path = Path.of("data", "productList.csv");
         try {
-            if(!Files.exists(path)) {
-                Files.createDirectories(path.getParent());
-                Files.createFile(path);
-                Files.writeString(path, "STATUS,ID,BARCODE,NAME" + System.lineSeparator()
-                                    , StandardCharsets.UTF_8);
-            }
-            List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            List<String> lines = CsvFileUtil.loadLines("data", "productList.csv"
+                                                        , "STATUS,ID,BARCODE,NAME");
             for(int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 if(line.isBlank()){continue;} // 我們決定採用 append 但以防萬一還是保留
