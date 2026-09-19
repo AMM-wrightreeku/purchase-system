@@ -9,8 +9,12 @@ import org.springframework.stereotype.Service;
 import com.example.purchase_system.dto.PurchaseItemRequest;
 import com.example.purchase_system.dto.PurchaseRequest;
 import com.example.purchase_system.dto.PurchaseSearchRequest;
+import com.example.purchase_system.dto.PurchaseDetailResponse;
+import com.example.purchase_system.dto.PurchaseItemDetailResponse;
+import com.example.purchase_system.entity.Product;
 import com.example.purchase_system.entity.Purchase;
 import com.example.purchase_system.entity.PurchaseItem;
+import com.example.purchase_system.entity.Supplier;
 import com.example.purchase_system.repository.ProductRepository;
 import com.example.purchase_system.repository.PurchaseItemRepository;
 import com.example.purchase_system.repository.PurchaseRepository;
@@ -158,5 +162,38 @@ public class PurchaseService {
             throw new IllegalArgumentException("startDate cannot be later than endDate.");
         }
         return purchaseRepository.search(request.getSupplierId(), request.getStartDate(), request.getEndDate());
+    }
+
+    public PurchaseDetailResponse getPurchaseDetail(int purchaseId) {
+        // id O, supplierId O, supplierName O, date O, note O , 
+        // List
+        Purchase purchase = purchaseRepository.findById(purchaseId)
+                .orElseThrow(() -> new IllegalArgumentException("Purchase does not exist."));
+        // purchase 有 supplierId, date, note                       
+        // 靠 id 調出 name
+        int supplierId = purchase.getSupplierId();
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new IllegalArgumentException("Supplier does not exist."));
+        String supplierName = supplier.getName();
+        LocalDate date = purchase.getDate();
+        String note = purchase.getNote();
+        // 找出 List items
+        // 要有 pItem Id
+        // 找出 p
+        List<PurchaseItem> pItems = pItemRepository.findByPurchaseId(purchaseId);
+        List<PurchaseItemDetailResponse> items = new ArrayList<>();
+        for(PurchaseItem pItem : pItems) {
+            int productId = pItem.getProductId();
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new IllegalArgumentException("Product does not exist."));
+            PurchaseItemDetailResponse item = new PurchaseItemDetailResponse(
+                    pItem.getId(), productId, product.getBarcode()
+                    , product.getName(), pItem.getQuantity(), pItem.getTotalPrice());
+            items.add(item);
+        }
+        PurchaseDetailResponse pDetailResponse = new PurchaseDetailResponse(
+                purchaseId, supplierId, supplierName
+                , date, note, items);
+        return pDetailResponse;
     }
 }
