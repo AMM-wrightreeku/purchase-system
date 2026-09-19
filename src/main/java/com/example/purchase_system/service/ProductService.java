@@ -2,10 +2,13 @@ package com.example.purchase_system.service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
+
 
 import com.example.purchase_system.entity.Product;
 import com.example.purchase_system.repository.ProductRepository;
 
+@Service
 public class ProductService {
     private ProductRepository productRep;
 
@@ -25,15 +28,17 @@ public class ProductService {
     public Optional<Product> findById(int id) {
         return productRep.findById(id);
     }
-
     // 條碼找商品
     public Optional<Product> findByBarcode(String barcode) {
         return productRep.findByBarcode(barcode);
     }
-
     // 名稱找商品
     public List<Product> findByName(String name) {
         return productRep.findByName(name);
+    }
+
+    public List<Product> findAll() {
+        return productRep.findAll();
     }
 
 }

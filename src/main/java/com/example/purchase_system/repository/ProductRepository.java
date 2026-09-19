@@ -1,5 +1,11 @@
 package com.example.purchase_system.repository;
 import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.io.IOException;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +22,7 @@ public class ProductRepository {
 
     public ProductRepository() {
         products = new LinkedHashMap<>();
+        loadProductFromCsv();
     }
 
     public Product save(String barcode, String name) {
@@ -29,6 +36,7 @@ public class ProductRepository {
         // main motion
         int id = IdGenerator.getNextId(products.keySet()); // 呼叫 util 直接找 ID
         Product product = new Product(id, barcode, name);
+        saveProductToCsv(product);
         products.put(id, product);
         return product;
     }
@@ -59,5 +67,55 @@ public class ProductRepository {
         }
 
         return result;
+    }
+
+    public List<Product> findAll() {
+        return new ArrayList<>(products.values());
+    }   
+
+    private void saveProductToCsv(Product product) {
+        Path path = Path.of("data", "productList.csv");
+        try {
+            String line = "CREATE," 
+                            + product.getId() + "," 
+                            + ((product.getBarcode() == null) ? "" : product.getBarcode()) + "," 
+                            + product.getName() + System.lineSeparator();
+            Files.writeString(path, line, StandardCharsets.UTF_8
+                                , StandardOpenOption.APPEND
+            );
+        } catch(IOException e) {
+            throw new IllegalArgumentException("Cannot save productList.csv", e);
+        }
+    }
+
+    private void loadProductFromCsv() {
+        Path path = Path.of("data", "productList.csv");
+        try {
+            if(!Files.exists(path)) {
+                Files.createDirectories(path.getParent());
+                Files.createFile(path);
+                Files.writeString(path, "STATUS,ID,BARCODE,NAME" + System.lineSeparator()
+                                    , StandardCharsets.UTF_8);
+            }
+            List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            for(int i = 1; i < lines.size(); i++) {
+                String line = lines.get(i);
+                if(line.isBlank()){continue;} // 我們決定採用 append 但以防萬一還是保留
+                String[] columns = line.split(",", 4);
+                // CREATE, ID, BARCODE, NAME
+                if(columns.length < 4) {throw new IllegalArgumentException(
+                    "productList.csv format error at line " + (i+1));
+                }
+                String status = columns[0].trim();
+                if(!"CREATE".equals(status)) { continue;}
+                int id = Integer.parseInt(columns[1].trim());
+                String barcode = columns[2].trim();
+                String name = columns[3].trim();
+                Product product = new Product(id, barcode, name);
+                products.put(id, product);
+            }
+        } catch(IOException e) {
+            throw new IllegalStateException("Cannot read productList.csv", e);
+        }
     }
 }

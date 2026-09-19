@@ -81,15 +81,14 @@ public class SupplierRepository {
             for(int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 if(line.isBlank()) {continue;}
-            String[] columns = line.split(",",2); // csv 靠 , 分隔屬性
-            if(columns.length < 2) {throw new IllegalStateException(
-                "supplierList.csv format error at line " + (i+1)
-                );
-            }
-            int id = Integer.parseInt(columns[0].trim());
-            String name = columns[1].trim();
-            Supplier supplier = new Supplier(id, name);
-            suppliers.put(id, supplier);
+                String[] columns = line.split(",",2); // csv 靠 , 分隔屬性
+                if(columns.length < 2) {throw new IllegalStateException(
+                "supplierList.csv format error at line " + (i+1));
+                }
+                int id = Integer.parseInt(columns[0].trim());
+                String name = columns[1].trim();
+                Supplier supplier = new Supplier(id, name);
+                suppliers.put(id, supplier);
             }          
         } catch (IOException e) {
             throw new IllegalStateException(
