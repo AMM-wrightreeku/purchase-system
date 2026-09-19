@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -89,4 +90,14 @@ public class PurchaseRepository {
         }
     }
 
+    public List<Purchase> search(Integer supplierId, LocalDate startDate, LocalDate endDate) {
+        List<Purchase> result = new ArrayList<>();
+        for(Purchase purchase : purchases.values()) {
+            if(supplierId != null && supplierId != purchase.getSupplierId()) {continue;}
+            if(startDate != null && startDate.isAfter(purchase.getDate())) {continue;}
+            if(endDate != null && endDate.isBefore(purchase.getDate())) {continue;}
+            result.add(purchase);
+        }
+        return result;
+    }
 }

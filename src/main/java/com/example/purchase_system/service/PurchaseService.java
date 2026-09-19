@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.purchase_system.dto.PurchaseItemRequest;
 import com.example.purchase_system.dto.PurchaseRequest;
+import com.example.purchase_system.dto.PurchaseSearchRequest;
 import com.example.purchase_system.entity.Purchase;
 import com.example.purchase_system.entity.PurchaseItem;
 import com.example.purchase_system.repository.ProductRepository;
@@ -148,5 +149,14 @@ public class PurchaseService {
                                 , request.getItems().get(i).getTotalPrice());
         }
         return purchase;
+    }
+    
+    public List<Purchase> search(PurchaseSearchRequest request) {
+        if(request == null) {throw new IllegalArgumentException("Request is null.");}
+        if(request.getStartDate() != null && request.getEndDate() != null
+                && request.getStartDate().isAfter(request.getEndDate())) {
+            throw new IllegalArgumentException("startDate cannot be later than endDate.");
+        }
+        return purchaseRepository.search(request.getSupplierId(), request.getStartDate(), request.getEndDate());
     }
 }
