@@ -10,12 +10,12 @@ public class PurchaseItemRequest {
     public PurchaseItemRequest() {}
     public PurchaseItemRequest(
         Integer productId, String barcode, String productName
-        , int quantity, int totlaPrice) {
+        , int quantity, int totalPrice) {
         this.productId = productId;
         this.barcode = barcode;
         this.productName = productName;
         this.quantity = quantity;
-        this.totalPrice = totlaPrice;
+        this.totalPrice = totalPrice;
         
     }
 
