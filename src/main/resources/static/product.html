@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商品管理</title>
+
+    </head>
+    <body>
+        <h2>商品管理</h2>
+        <div class="create-product">
+            <h3>新增商品</h3>
+            <div class="form-row">
+                <label for="barcode">條碼</label>
+                <input type="text" id="barcode">
+            </div>
+            <div class="form-row">
+                <label for="name">商品名稱</label>
+                <input type="text" id="name">
+            </div>
+            <button id="createButton">新增</button>
+        </div>
+        <div id="productList">
+            <h3>商品列表</h3>
+        </div>
+
+        <script>
+            function loadProducts() {
+                fetch("/products")
+                .then(response => response.json())
+                .then(products => {
+                    const productList = document.getElementById("productList");
+                    productList.innerHTML = "<h3>商品列表</h3>";
+
+                    products.forEach(product => {
+                        productList.innerHTML += `
+                            <div class="product">
+                                <p>
+                                    ID：${product.id}<br>
+                                    條碼：${product.barcode ?? ""}<br>
+                                    商品名稱：${product.name}
+                                </p>
+                            </div>
+                    `});
+                })
+            }
+           loadProducts();
+
+           document.getElementById("createButton").addEventListener("click", function() {
+                const barcode = document.getElementById("barcode").value;
+                const name = document.getElementById("name").value;
+                const request = {
+                    barcode: barcode || null,
+                    name: name
+                };
+                fetch("/products", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(request)
+                })
+                .then(response => {
+                    if(!response.ok) {
+                        throw new Error("新增商品失敗");
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    document.getElementById("barcode").value = "";
+                    document.getElementById("name").value = "";
+
+                    loadProducts();
+                })
+                .catch(error => {
+                    alert("新增商品失敗");
+                    console.error(error);
+                })
+
+            })
+        </script>
+        
+
+    </body>
+</html>
