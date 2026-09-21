@@ -71,7 +71,13 @@
 </head>
 
 <body>
-
+    <nav>
+        <a href="/index.html">進貨登錄</a>
+        <a href="/purchase-search.html">進貨查詢</a>
+        <a href="/product.html">商品管理</a>
+        <a href="/supplier.html">廠商管理</a>
+    </nav>
+    
     <h1>進貨登錄系統</h1>
     <div class="subtitle">進貨登錄雛型</div>
 
@@ -174,24 +180,30 @@
 
         // purchase items
         const items = [];
+        let products = [];
+        fetch("/products")
+            .then(response => response.json())
+            .then(data => {
+                products = data;
+            });
 
-        const addItemButton =
-            document.getElementById("addItemButton");
-
+        const addItemButton =document.getElementById("addItemButton");
 
         addItemButton.addEventListener(
             "click",
             function() {
 
                 // barcode
-                const barcode =
-                    document.getElementById("barcode").value;
-
+                const barcode =document.getElementById("barcode").value;
                 // product name
-                const productName =
-                    document.getElementById("productName").value;
-
-                if(productName.trim() == "") {
+                const productName =document.getElementById("productName").value;
+                
+                const existingProduct = products.find(product =>
+                    product.barcode === barcode
+                )
+                const productId = existingProduct ? existingProduct.id : null;
+                
+                if(productId === null && productName.trim() === "") {
                     alert("請輸入商品名稱");
                     return;
                 }
@@ -234,7 +246,7 @@
 
                 const item = {
 
-                    productId: null,
+                    productId: productId,
 
                     barcode: barcode,
 
@@ -424,122 +436,39 @@
                                 items
                         };
 
+                        console.log(JSON.stringify(purchaseRequest));
 
-                        console.log(
-                            purchaseRequest
-                        );
-
-
-                        fetch(
-                            "/purchases",
-                            {
-
+                        fetch("/purchases", {
                                 method: "POST",
-
                                 headers: {
-
-                                    "Content-Type":
-                                        "application/json"
+                                    "Content-Type": "application/json"
                                 },
-
-                                body:
-
-                                    JSON.stringify(
-                                        purchaseRequest
-                                    )
+                                body: JSON.stringify(purchaseRequest)
                             }
                         )
-
-                        .then(
-                            function(response) {
-
-                                if(!response.ok) {
-
-                                    throw new Error(
-                                        "儲存失敗"
-                                    );
-                                }
-
-                                return response.json();
+                        .then(function(response) {
+                            if(!response.ok) {
+                                throw new Error("儲存失敗");
                             }
+                            return response.json();
+                        })
+                        .then(function(data) {
+                            console.log(data);
+                            alert("進貨資料儲存成功");  
+                            // clear all
+                            items.length = 0;
+                            document.getElementById("barcode").value = "";
+                            document.getElementById("productName").value = "";
+                            document.getElementById("quantity").value = "";
+                            document.getElementById("totalPrice").value = "";
+                            document.getElementById("note").value = "";
+                            document.getElementById("itemList").innerHTML ="尚未加入商品";
+                            document.getElementById("previewArea").innerHTML ="尚未產生確認內容";}
                         )
-
-                        .then(
-                            function(data) {
-
-                                console.log(data);
-
-                                alert(
-                                    "進貨資料儲存成功"
-                                );
-
-
-                                // clear all
-                                items.length = 0;
-
-
-                                document
-                                .getElementById(
-                                    "barcode"
-                                )
-                                .value = "";
-
-
-                                document
-                                .getElementById(
-                                    "productName"
-                                )
-                                .value = "";
-
-
-                                document
-                                .getElementById(
-                                    "quantity"
-                                )
-                                .value = "";
-
-
-                                document
-                                .getElementById(
-                                    "totalPrice"
-                                )
-                                .value = "";
-
-
-                                document
-                                .getElementById(
-                                    "note"
-                                )
-                                .value = "";
-
-
-                                document
-                                .getElementById(
-                                    "itemList"
-                                )
-                                .innerHTML =
-                                    "尚未加入商品";
-
-
-                                document
-                                .getElementById(
-                                    "previewArea"
-                                )
-                                .innerHTML =
-                                    "尚未產生確認內容";
-                            }
-                        )
-
-                        .catch(
-                            function(error) {
-
-                                console.error(error);
-
-                                alert(
-                                    "進貨儲存失敗"
-                                );
-                            }
-                        );
+                        .catch(function(error) {
+                            console.error(error);
+                            alert("進貨儲存失敗");
+                        });
                     }
                 );
             }
