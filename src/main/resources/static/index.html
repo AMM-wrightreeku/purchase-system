@@ -13,14 +13,16 @@
             padding: 0 20px;
             line-height: 1.8;
         }
-
-        h1 {
-            margin-bottom: 5px;
+            
+        nav {
+            margin-bottom: 20px;
         }
 
-        .subtitle {
-            color: #666;
-            margin-bottom: 25px;
+        nav a {
+            margin-right: 15px;
+        }
+        h1 {
+            margin-bottom: 5px;
         }
 
         .section {
@@ -79,7 +81,6 @@
     </nav>
     
     <h1>進貨登錄系統</h1>
-    <div class="subtitle">進貨登錄雛型</div>
 
     <div class="section">
         <h2>1. 進貨基本資料</h2>
@@ -198,9 +199,14 @@
                 // product name
                 const productName =document.getElementById("productName").value;
                 
-                const existingProduct = products.find(product =>
-                    product.barcode === barcode
-                )
+                let existingProduct = null;
+
+                if(barcode.trim() !== "") {
+                    existingProduct = products.find(product =>
+                        product.barcode === barcode
+                    )
+                }
+                
                 const productId = existingProduct ? existingProduct.id : null;
                 
                 if(productId === null && productName.trim() === "") {

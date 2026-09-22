@@ -3,6 +3,71 @@
     <head>
         <meta charset="UTF-8">
         <title>進貨查詢</title>
+
+        <style>
+            body {
+                font-family: Arial, "Microsoft JhengHei", sans-serif;
+                max-width: 900px;
+                margin: 30px auto;
+                padding: 0 20px;
+                line-height: 1.8;
+            }
+
+            nav {
+                margin-bottom: 20px;
+            }
+
+            nav a {
+                margin-right: 15px;
+            }
+
+            .search,
+            #resultArea,
+            #detailArea {
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .search h3,
+            #resultArea h3,
+            #detailArea h3 {
+                margin-top: 0;
+            }
+
+            .form-row {
+                margin-bottom: 10px;
+            }
+
+            .form-row label {
+                display: inline-block;
+                width: 90px;
+            }
+
+            input,
+            select {
+                padding: 6px;
+                min-width: 220px;
+            }
+
+            button {
+                padding: 8px 16px;
+                margin-right: 8px;
+                cursor: pointer;
+            }
+
+            .purchase-result {
+                background-color: #f7f7f7;
+                padding: 10px 15px;
+                border-radius: 6px;
+                margin-bottom: 10px;
+            }
+
+            #detailArea {
+                background-color: #f7f7f7;
+            }
+        </style>
     </head>
     <body>
         <nav>
@@ -11,9 +76,8 @@
             <a href="/product.html">商品管理</a>
             <a href="/supplier.html">廠商管理</a>
         </nav>
-        
+        <h1>進貨查詢</h1>
         <div class="search">
-            <h2>進貨查詢</h2>
                 <div class="form-row">
                     <label for="supplierId">供應商</label>
                     <select id="supplierId">

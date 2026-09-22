@@ -3,6 +3,64 @@
     <head>
         <meta charset="UTF-8">
         <title>廠商管理</title>
+
+        <style>
+            body {
+                font-family: Arial, "Microsoft JhengHei", sans-serif;
+                max-width: 900px;
+                margin: 30px auto;
+                padding: 0 20px;
+                line-height: 1.8;
+            }
+
+            nav {
+                margin-bottom: 20px;
+            }
+
+            nav a {
+                margin-right: 15px;
+            }
+
+            .create-supplier,
+            #supplierList {
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .create-supplier h3,
+            #supplierList h3 {
+                margin-top: 0;
+            }
+
+            .form-row {
+                margin-bottom: 10px;
+            }
+
+            .form-row label {
+                display: inline-block;
+                width: 90px;
+            }
+
+            input {
+                padding: 6px;
+                min-width: 220px;
+            }
+
+            button {
+                padding: 8px 16px;
+                margin-right: 8px;
+                cursor: pointer;
+            }
+
+            .supplier {
+                background-color: #f7f7f7;
+                padding: 10px 15px;
+                border-radius: 6px;
+                margin-bottom: 10px;
+            }
+        </style>
     </head>
     <body>
         <nav>
@@ -12,7 +70,7 @@
             <a href="/supplier.html">廠商管理</a>
         </nav>
 
-        <h2>廠商管理</h2>
+        <h1>廠商管理</h1>
         <div class="create-supplier">
             <h3>新增廠商</h3>
             <div class="form-row">
