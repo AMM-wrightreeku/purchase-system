@@ -6,6 +6,7 @@ target/
 target/
 release/
 package-input/
+package/
 data/
 *.rar
 

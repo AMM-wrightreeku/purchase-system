@@ -78,6 +78,7 @@
         <a href="/purchase-search.html">進貨查詢</a>
         <a href="/product.html">商品管理</a>
         <a href="/supplier.html">廠商管理</a>
+        <button type="button" onclick="shutdownSystem()">關閉系統</button>
     </nav>
     
     <h1>進貨登錄系統</h1>
@@ -156,8 +157,8 @@
         ※ 此版本為功能雛型，部分查詢與資料保存功能尚未完成。
     </p>
 
+    <script src="/js/common.js"></script>
     <script>
-
         fetch("/suppliers")
         .then(function(response) {
             return response.json();
@@ -385,37 +386,28 @@
                     note +
                     "<br><br>";
 
-
+                let allQty = 0;
+                let allPrice = 0;
                 for(const currentItem of items) {
-
+                    const unitPrice = currentItem.totalPrice / currentItem.quantity;
                     previewArea.innerHTML +=
-
-                        "條碼: " +
-                        currentItem.barcode +
-
-                        "　商品: " +
-                        currentItem.productName +
-
-                        "　數量: " +
-                        currentItem.quantity +
-
-                        "　進貨價格: " +
-                        currentItem.totalPrice +
-
+                        "條碼: " +currentItem.barcode +
+                        "　商　品: " +currentItem.productName +
+                        "　數　量: " +currentItem.quantity +
+                        "進貨價格: " +currentItem.totalPrice +
+                        "　單　價: " +unitPrice+
                         "<br>";
+                    allQty += currentItem.quantity;
+                    allPrice += currentItem.totalPrice;
                 }
 
 
                 previewArea.innerHTML +=
+                    "<br>進貨數量: " + allQty +
+                    "<br>進貨價格: " + allPrice +
+                    "<br><button id='saveButton'>確認儲存</button>";
 
-                    "<br>" +
-
-                    "<button id='saveButton'>" +
-                    "確認儲存" +
-                    "</button>";
-
-
-                const saveButton =
+                    const saveButton =
 
                     document.getElementById(
                         "saveButton"

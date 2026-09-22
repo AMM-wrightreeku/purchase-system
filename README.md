@@ -1,6 +1,7 @@
 # Purchase System
 
 ## 1. 專案目的
+本程式只限定單機使用，不可以用做連網。
 這是朋友委託製作的進貨登錄系統，現在主要處理進貨資料管理的部分。
 目前以本機 CSV 作為資料儲存方式，完成最低可用版本(MVP)後，再依實際使用需求持續調整功能。
 
@@ -130,7 +131,6 @@ UPDATE、DELETE 與完整的歷史紀錄處理方式留待後續版本實作。
 
 ### 功能
 - PurchaseItem 暫存清單支援修改、刪除。
-- 顯示進貨數量與總金額。
 - Product、Supplier、Purchase、PurchaseItem 的 UPDATE / DELETE。
 - Product 直接選擇或以 productId 操作。
 - 完善輸入資料的錯誤提示與 HTTP 錯誤處理。

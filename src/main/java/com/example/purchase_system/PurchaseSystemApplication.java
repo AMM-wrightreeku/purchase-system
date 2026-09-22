@@ -8,6 +8,7 @@ public class PurchaseSystemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PurchaseSystemApplication.class, args);
+		
 	}
 
 }

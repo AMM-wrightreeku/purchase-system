@@ -68,6 +68,7 @@
             <a href="/purchase-search.html">進貨查詢</a>
             <a href="/product.html">商品管理</a>
             <a href="/supplier.html">廠商管理</a>
+            <button type="button" onclick="shutdownSystem()">關閉系統</button>
         </nav>
 
         <h1>廠商管理</h1>
@@ -83,6 +84,7 @@
             <h3>廠商列表</h3>
         </div>
 
+        <script src="/js/common.js"></script>
         <script>
             function loadSuppliers() {
                 fetch("/suppliers")
