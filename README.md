@@ -2,17 +2,31 @@
 
 ## 1. 專案目的
 這是朋友委託製作的進貨登錄系統，現在主要處理進貨資料管理的部分。
+目前以本機 CSV 作為資料儲存方式，完成可最低可用版本(MVP)後，再依實際使用需求持續調整功能。
 
 ## 2. 目前功能
-- 可以從 CSV 讀取既有廠商資料。
-- 可以建立進貨訂單、商品及進貨商品資料。
-<!-- 目前新增資料僅保存在記憶體中，尚未檔案持久化。 -->
-- Product, Purchase, PurchaseItem, Supplier 已支援 CSV 持久化：
-  - 新增 Product 時寫入 CSV
-  - 程式啟動時從 CSV 讀取 Product 資料
-  - 程式重新起動後可以繼續使用既有資料及接續 ID
+### 進貨管理
+- 建立進貨資料。
+- 進貨時可使用既有商品，或建立新商品。
+- 可依廠商、日期區間查詢進貨紀錄。
+- 可查看單筆進貨紀錄及其商品明細。
+
+### 商品管理
+- 新增商品
+- 顯示全部商品
+
+### 廠商管理
+- 新增廠商
+- 顯示全部廠商
+
+### 資料持久化
+- Product、Supplier、Purchase、PurchaseItem 皆使用 CSV 持久化。
+- 程式啟動時從 CSV 還原資料至記憶體。
+- 程式重新起動後可繼續使用既有資料並接續 ID。
 
 ## 3. 系統架構
+目前採用簡單的分層架構：
+
 Browser / JavaScript
 ↓
 HTTP Request / DTO
@@ -24,187 +38,113 @@ Service
 Repository
 ↓
 CSV / Map
-------------
-Repository Operation:
 
-Supplier
-→ supplierList.csv + Map
+主要責任：
+- Controller：處理 HTTP Request / Response，接受 DTO 並呼叫 Service。
+- Service：處理商業邏輯、資料驗證及流程控制。
+- Repository：負責資料存取及查詢。
+- CSV：目前 MVP 使用的本機持久化方式。
 
-Product
-→ productList.csv + Map
-
-Purchase
-→ purchaseLit.csv + Map
-
-PurchaseItem
-→ purchaseItemList.csv + Map
-------------
-資料儲存以 CSV 為主，先行建立 'StorageType' 待擴充
-- CSV
-- MYSQL
+目前 Repository 會將資料保存在記憶體中，並同步寫入 CSV。
+程式啟動時會讀取 CSV，重新建立記憶體中的資料。
 
 ## 4. 資料模型
-Product
-｜1    ├ id
-｜    ├ name
-｜    └ barcode
-｜N
-PurchaseItem
-｜N   ├ id
-｜    ├ productId
-｜    ├ purchaseId
-｜    ├ quantity
-｜    └ totalPrice
-｜1
-Purchase
-｜N   ├ id
-｜    ├ supplierId
-｜    ├ date
-｜    └ note
-｜1
-Supplier
-      ├ id
-       └ name
+### Product
+- id
+- barcode   - 可以 null
+- name      - 必填
 
-資料規則：
-- 相同 Product 的多列 PurchaseItem 保持獨立，不自動合併。
-- unitPrice 不保存，由 totalPrice / quantity 計算。
-- Product 的 barcode 可以為空
-- 已存在的 Product 使用 productId 為主要辨識，
-  同 productId 會忽略 barcode, name 的比較
+### Supplier
+- id
+- name      - 不可與既有 Supplier 重複。
 
-## 5 持久化
+### Purchase
+- id
+- supplierId   - 對應 Supplier
+- date
+- note
 
-Product
-STATUS,ID,BARCODE,NAME
-- 目前採用 APPEND 新增紀錄
+一筆 Purchase 代表一次進貨紀錄。
 
-- Repository 啟動流程：
-ProductRepository
-↓
-檢查 productList.csv
-↓
-不存在 → 建立 data 目錄及 CSV
-↓ 
-讀取 CREATE 紀錄
-↓
-建立 Product
-↓
-還原至 Map
+### PurchaseItem
+- id
+- purchaseId   - 對應 Purchase
+- productId    - 對應 Product
+- quantity     - 必須大於等於 1
+- totalPrice   - 必須大於等於 0
 
-- 新增 Product 流程：
-ProductRepository.save(...)
-↓
-建立 Product
-↓
-寫入 CSV
-↓
-寫入成功
-↓
-更新 Map
-↓
-return Product
+一筆 Purchase 代表某次進貨中的一筆商品明細。
+同一 Product 可以在同一筆或不同 Purchase 中出現多次。
+系統不會自動合併相同 Product 的 PurchaseItem。
 
-CSV 持久化成功才會將新增資料視為 Repository 儲存成功
+## 5. CSV 持久化
+目前 MVP 使用本機 CSV 檔案作為資料持久化方式。
 
-## 6. 建立一筆進貨單的流程
-Browser
-↓
-建立 PurchaseRequest
-↓
-POST
-↓
-PurchaseController
-↓
-PurchaseService.createFullPurchase(request)
-↓
-checkRequest(request)
-↓
-checkRequestData(request)
-↓
-getOrCreateProductIds(request)
-↓
-取得每一列對應的 productId
-↓
-PurchaseRepository.save(...)
-↓
-取得新建立的 purchaseId
-↓
-逐筆處理 request.items
-↓
-PurchaseItemRepository.save(
-    purchaseId,
-    productId,
-    quantity,
-    totalPrice
-)
-↓
-return Purchase
+### 儲存方式
+Product、Supplier、Purchase、PurchaseItem 各自使用獨立的 CSV 檔案。
 
-## 7. 2026/09/27 預定最低可用版本目標
+新增資料：
+1. Repository 將 CREATE 狀態的紀錄寫入 CSV。
+2. CSV 寫入成功後，再將資料加入記憶體中的 Map。
+   避免 CSV 寫入失敗時，記憶體中卻已存在該筆資料。
 
-<!-- 1. Purchase 可以持久化儲存，讓實際使用者開始保存進貨資料。 -->
----完成進度---
-2. Purchase 可以查詢持久化資料，最低支援：
-   - 依廠商查詢
-   - 依日期查詢
-3. Product 獨立頁面：
-   - 新增 Product
-   - 顯示全部 Product
-4. Supplier 獨立頁面：
-   - 新增 Supplier
-   - 顯示全部 Supplier
-5. Purchase 獨立頁面：
-   - 新增 Purchase
-   - 查詢 Purchase
+### 啟動 Replay
+啟動程式會讀取各 CSV 檔案，依照 STATUS 紀錄重新建立記憶體中的資料。
+Replay 完成後，會依現有資料接續產生新的 ID，避免程式重新啟動後 ID 從 0 開始。
 
-## 8. 後續開發
+### CSV 格式
+Product        | STATUS,ID,BARCODE,NAME
+Supplier       | STATUS,ID,NAME
+Purchase       | STATUS,ID,SUPPLIER_ID,DATE,NOTE
+PurchaseItem   | STATUS,ID,PURCHASE_ID,PRODUCT_ID,QUANTITY,TOTAL_PRICE
 
-### 持久化
-<!-- - Purchase CSV 持久化。
-- PurchaseItem CSV 持久化。
-- Supplier 新增資料的持久化。 -->
---- 進度 ---
-- 未來評估 MySQL 等其他資料儲存方式。
-- 視需要將 Repository 介面化並抽象實作，使 Service 不依賴實際儲存技術。
+目前僅實作 CREATE。
+UPDATE、DELETE 與完整的歷史紀錄處理方式留待後續版本實作。
 
-### CSV
-目前實作
-- CREATE
+### 限制
+- 尚未處理 CSV 欄位中的特殊字元。
+- 尚未實作跨多個 Repository 的 transaction / rollback。
+- 未知的 STATUS 目前採忽略處理。
 
-未來預計加入
-- UPDATE
-- DELETE
+## 6. 商品識別規則
+建立 PurchaseItem 時，依照以下順序判斷 Product：
+1. 有 productId
+   - 以 productId 對應的 Product 為準。
+   - barcode、name 不作為商品判斷依據。
+   - productId 不存在時視為錯誤。
 
-目前未知的 STATUS 先忽略，僅判讀CREATE
+2. 無 productId，但有 barcode
+   - 以 barcode 查詢既有 Product。
+   - 找到時取得該 Product 的 productId，並依照 productId 規則處理。
+   - 找不到時視為建立新 Product。
 
-未來重構時：
-- UPDATE / DELETE replay。
-- 未知 STATUS 改為嚴格驗證並在資料異常時停止載入。
-- 保存歷史最大 ID，避免 DELETE 後重新使用舊 ID。
-- 舊資料轉移／整理機制。
-- 將歷史紀錄整理成目前狀態，改善大量歷史資料造成的啟動讀取效率。
+3. 無法對應既有 Product
+   - 視為建立新 Product。
+   - name 必填。
+   - barcode 可以為 null。
+   - 建立時會自動建立新 productId。
 
-### 後端
-- Purchase 依廠商查詢。
-- Purchase 依日期查詢。
-- rollback / transaction 機制，避免建立完整 Purchase 過程中產生部分持久化資料。
-- CSV 格式及特殊字元處理。
+目前前端尚未提供直接選擇或輸入 productId 的功能。
 
-### 前端
-- Product 獨立管理頁面。
-- Supplier 獨立管理頁面。
-- Purchase 新增／查詢頁面。
-- 暫存商品修改、刪除。
-- 最終確認畫面顯示進貨總數量及進貨總價。
-- 查到既有商品後保留 productId，後續進貨使用既有 Product。
+## ７. 後續開發
+
+### 功能
+- PurchaseItem 暫存清單支援修改、刪除。
+- 顯示進貨數量與總金額。
+- Product、Supplier、Purchase、PurchaseItem 的 UPDATE / DELETE。
+- Product 直接選擇或以 productId 操作。
+- 完善輸入資料的錯誤提示與 HTTP 錯誤處理。
+
+### 資料儲存
+- CSV 特殊字元處理。
+- UPDATE / DELETE 的 Replay。
+- CSV 歷史紀錄整理與壓縮。
+- 跨 Repository 的 transaction / rollback。
+- Repository 抽象化，未來可切換 CSV / MySQL。
 
 ### 測試
-為壓縮 2026/09/27 最低可用版本的開發時間，目前暫緩 Test。
+- 補充 Service、Repository 等自動化測試。
+- 補充各種錯誤與邊界條件測試。
 
-最低可用版本完成後：
-- 重構 PurchaseServiceTest。
-- 配合 PurchaseItem 不自動合併的新規則更新測試。
-- 補充 CSV persistence 測試。
-- 補充重新啟動後資料還原相關測試。
-- 逐步補齊 Repository / Service 測試。
+### 待確認需求
+- 使用既有 Product 進貨時，畫面應顯示本次輸入的商品名稱，或 Product 中保存的正式名稱。
