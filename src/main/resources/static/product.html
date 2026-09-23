@@ -5,93 +5,141 @@
         <title>商品管理</title>
 
         <style>
-        body {
-            font-family: Arial, "Microsoft JhengHei", sans-serif;
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-            line-height: 1.8;
-        }
-
-        nav {
-            margin-bottom: 20px;
-        }
-
-        nav a {
-            margin-right: 15px;
-        }
-
-        h1 {
-            margin-bottom: 5px;
-        }
-
-        .create-product,
-        #productList {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .create-product h3,
-        #productList h3 {
-            margin-top: 0;
-        }
-
-        .form-row {
-            margin-bottom: 10px;
-        }
-
-        .form-row label {
-            display: inline-block;
-            width: 90px;
-        }
-
-        input {
-            padding: 6px;
-            min-width: 220px;
-        }
-
-        button {
-            padding: 8px 16px;
-            margin-right: 8px;
-            cursor: pointer;
-        }
-
-        .product {
-            background-color: #f7f7f7;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-        }
-    </style>
-
+            html {
+                scrollbar-gutter: stable;
+            }
+            body {
+                background-color: #f5f5f5;
+                max-width: 1300px;
+                margin: 0 auto;
+                font-family: Arial, "Microsoft JhengHei", sans-serif;
+                line-height: 0.8;
+            }
+            /* top */
+            .top-bar {
+                padding: 15px 20px;
+                border-bottom: 1px solid #ccc;
+                background-color: #c1dddf;
+            }
+            .top-bar nav {
+                display: flex;
+                gap: 15px;
+                align-items: center;
+            }
+            .shutdown-button {
+                margin-left: auto;
+            }
+            .link-button {
+                display: inline-block;
+                padding: 8px 16px;
+                border: 1px solid #888;
+                border-radius: 4px;
+                background-color: #f0f0f0;
+                color: #000;
+                text-decoration: none;
+                line-height: normal;
+            }
+            /* floor */
+            main {
+                display: flex;
+                gap: 20px;
+                margin: 10px;
+            }
+            .input-panel,
+            .result-panel {
+                flex: 1;
+                min-width: 0;
+                border: 1px solid #ccc;
+                padding: 10px;
+                border-radius: 4px;
+                background-color: #fff;
+            }
+            /* left */
+            .input-panel h1 {
+                margin-top: 0;
+            }
+            .form-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .form-row label {
+                width: 100px;
+                flex-shrink: 0;
+            }
+            .form-row input,
+            .form-row select {
+                flex: 1;
+                padding: 8px;
+                box-sizing: border-box;
+            }
+            #createButton {
+                display: block;
+                margin-left: auto;
+            }
+            .section {
+                margin-bottom: 25px;
+            }
+            /* right */
+            .section h2 {
+                margin-top: 0;
+                margin-bottom: 15px;
+            }
+            .product {
+                background-color: #f7f7f7;
+                padding: 1px 10px;
+                border-radius: 6px;
+                margin-bottom: 1px;
+                line-height: 1.0;
+            }
+            /* all Area */
+            button {
+                padding: 8px 16px;
+                cursor: pointer;
+                border-radius: 4px;
+            }
+            
+            @media (max-width: 800px) {
+                main {
+                    flex-direction: column;
+                }
+            }
+        </style>
     </head>
     <body>
-        <nav>
-            <a href="/index.html">進貨登錄</a>
-            <a href="/purchase-search.html">進貨查詢</a>
-            <a href="/product.html">商品管理</a>
-            <a href="/supplier.html">廠商管理</a>
-            <button type="button" onclick="shutdownSystem()">關閉系統</button>
-        </nav>
-        <h1>商品管理</h1>
-        <div class="create-product">
-            <h3>新增商品</h3>
-            <div class="form-row">
-                <label for="barcode">條碼</label>
-                <input type="text" id="barcode">
-            </div>
-            <div class="form-row">
-                <label for="name">商品名稱</label>
-                <input type="text" id="name">
-            </div>
+        <header class="top-bar">
+             <nav> 
+                <a class="link-button" href="/index.html">進貨登錄</a>
+                <a class="link-button" href="/purchase-search.html">進貨查詢</a>
+                <a class="link-button" href="/product.html">商品管理</a>
+                <a class="link-button" href="/supplier.html">廠商管理</a>
+                <button class="shutdown-button" type="button" onclick="shutdownSystem()">關閉系統</button>
+            </nav>
+        </header>
+    <main>
+        <section class="input-panel">
+            <h1>商品管理</h1>
+            <div class="section">
+                <h2>新增商品</h2>
+                <div class="form-row">
+                    <label for="barcode">條碼</label>
+                    <input type="text" id="barcode">
+                </div>
+                <div class="form-row">
+                    <label for="name">商品名稱</label>
+                    <input type="text" id="name">
+                </div>
             <button id="createButton">新增</button>
-        </div>
-        <div id="productList">
-            <h3>商品列表</h3>
-        </div>
-
+            </div>
+        </section>
+        <section class="result-panel">
+            <div class="section">
+                <div id="productList">
+                    <h2>商品列表</h2>
+                </div>
+            </div>
+        </section>
+    </main>
         <script src="/js/common.js"></script>
         <script>
             function loadProducts() {
@@ -99,7 +147,7 @@
                 .then(response => response.json())
                 .then(products => {
                     const productList = document.getElementById("productList");
-                    productList.innerHTML = "<h3>商品列表</h3>";
+                    productList.innerHTML = "<h2>商品列表</h2>";
 
                     products.forEach(product => {
                         productList.innerHTML += `
