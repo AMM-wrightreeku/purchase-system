@@ -87,16 +87,58 @@
             border: 1px solid #ddd;
             padding: 10px;
             min-height: 80px;
+            font-size: 10pt;
+            line-height: 1.2;
         }
-        #previewButton {
+        .item-title {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .item-title ,
+        .item-row {
+            display: grid;
+            grid-template-columns: 3fr 3fr 1fr 1.5fr;
+        }
+        .preview-title {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .preview-title,
+        .preview-row,
+        .preview-total {
+            display: grid;
+            grid-template-columns: 3fr 3fr 1fr 1.5fr 1fr;
+        }
+        .total-quantity {
+            grid-column: 3;
+        }
+        .total-price {
+            grid-column: 4;
+        }
+        .item-title span,
+        .item-row span,
+        .preview-title span,
+        .preview-row span {
+            border-right: 1px solid #ddd;
+            padding: 0 8px;
+        }
+        .item-title span:last-child,
+        .item-row span:last-child,
+        .preview-title span:last-child,
+        .preview-row span:last-child {
+            border-right: none;
+        }
+        #previewButton ,
+        #saveButton{
             display: block;
             margin-left: auto;
             margin-top: 10px;
         }
-        .section h2 {
+        h2 {
             margin-top: 0;
             margin-bottom: 15px;
         }
+
         /* all Area */
         button {
             padding: 8px 16px;
@@ -283,41 +325,29 @@
                     totalPrice: totalPrice
                 };
 
-
                 items.push(item);
 
-
-                const itemList =
-                    document.getElementById("itemList");
-
-                itemList.innerHTML = "";
-
-
+                const itemList = document.getElementById("itemList");
+                itemList.innerHTML = `
+                    <div class="item-title">
+                        <span>條碼</span>
+                        <span>商品</span>
+                        <span>數量</span>
+                        <span>進貨價格</span>
+                    </div>`;
                 for(const currentItem of items) {
-
-                    itemList.innerHTML +=
-
-                        "條碼: " +
-                        currentItem.barcode +
-
-                        "　商品: " +
-                        currentItem.productName +
-
-                        "　數量: " +
-                        currentItem.quantity +
-
-                        "　進貨價格: " +
-                        currentItem.totalPrice +
-
-                        "<br>";
+                    itemList.innerHTML += `
+                        <div class="item-row">
+                            <span>${currentItem.barcode}</span>
+                            <span>${currentItem.productName}</span>
+                            <span>${currentItem.quantity}</span>
+                            <span>${currentItem.totalPrice}</span>
+                        </div>`;
                 }
             }
         );
 
-
-
         // preview item list
-
         const previewButton =
             document.getElementById("previewButton");
 
@@ -390,42 +420,39 @@
 
 
                 previewArea.innerHTML =
-
-                    "<strong>進貨內容確認</strong><br><br>" +
-
-                    "供應商: " +
-                    supplierName +
-                    "<br>" +
-
-                    "日期: " +
-                    purchaseDate +
-                    "<br>" +
-
-                    "備註: " +
-                    note +
-                    "<br><br>";
-
+                    "供應商: " +supplierName +"<br>" +
+                    "日期: " +purchaseDate +"<br>" +
+                    "備註: " +note +"<br><br>";
+                previewArea.innerHTML += `
+                    <div class="preview-title">
+                        <span>條碼</span>
+                        <span>商品</span>
+                        <span>數量</span>
+                        <span>進貨價格</span>
+                        <span>單價</span>
+                    </div>`;
                 let allQty = 0;
                 let allPrice = 0;
                 for(const currentItem of items) {
                     const unitPrice = currentItem.totalPrice / currentItem.quantity;
-                    previewArea.innerHTML +=
-                        "條碼: " +currentItem.barcode +
-                        "　商　品: " +currentItem.productName +
-                        "　數　量: " +currentItem.quantity +
-                        "進貨價格: " +currentItem.totalPrice +
-                        "　單　價: " +unitPrice+
-                        "<br>";
+                    previewArea.innerHTML +=`
+                        <div class="preview-row">
+                            <span>${currentItem.barcode}</span>
+                            <span>${currentItem.productName}</span>
+                            <span>${currentItem.quantity}</span>
+                            <span>${currentItem.totalPrice}</span>
+                            <span>${unitPrice.toFixed(2)}</span>
+                        </div>`;
                     allQty += currentItem.quantity;
                     allPrice += currentItem.totalPrice;
                 }
-
-
-                previewArea.innerHTML +=
-                    "<br>進貨數量: " + allQty +
-                    "<br>進貨價格: " + allPrice +
-                    "<br><button id='saveButton'>確認儲存</button>";
-
+                previewArea.innerHTML +=`
+                    <br>
+                    <div class="preview-total">
+                        <span class="total-quantity">${allQty}<br>進貨總量</span>
+                        <span class="total-price">${allPrice}<br>總價</span>
+                    </div>        
+                    <button id='saveButton'>確認儲存</button>`;
                     const saveButton =
 
                     document.getElementById(
