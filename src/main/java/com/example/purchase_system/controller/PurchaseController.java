@@ -30,7 +30,7 @@ public class PurchaseController {
 
     @GetMapping
     public List<Purchase> search(PurchaseSearchRequest request) {
-        return purchaseService.search(request);
+        return purchaseService.searchPurchases(request);
     }
  
     @GetMapping("/{purchaseId}")

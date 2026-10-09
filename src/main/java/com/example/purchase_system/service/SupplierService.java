@@ -10,27 +10,29 @@ import com.example.purchase_system.repository.SupplierRepository;
 
 @Service
 public class SupplierService {
-    private SupplierRepository supRep;
+    private final SupplierRepository supRep;
 
     public SupplierService(SupplierRepository supRep) {
         this.supRep = supRep;
     }
 
-    // 新增供應商
     public Supplier createSupplier(String name) {
-        if(name == null || name.isBlank()) throw new IllegalArgumentException("Name cannot be blank.");
-        if(supRep.findByExactName(name).isPresent()) throw new IllegalArgumentException("Name already exists.");
+        if(name == null || name.isBlank()) 
+            throw new IllegalArgumentException("Name cannot be blank.");
+        if(supRep.findByExactName(name).isPresent()) 
+            throw new IllegalArgumentException("Name already exists.");
+        
         return supRep.save(name);
     }
-    // 找ID
+
     public Optional<Supplier> findById(int id) {
         return supRep.findById(id);
     }
-    // 找名字
+
     public List<Supplier> findByName(String name) {
         return supRep.findByName(name);
     }
-    // findALL
+
     public List<Supplier> findAll() {
         return supRep.findAll();
     }

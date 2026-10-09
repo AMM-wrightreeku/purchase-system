@@ -90,7 +90,7 @@ public class PurchaseRepository {
         }
     }
 
-    public List<Purchase> search(Integer supplierId, LocalDate startDate, LocalDate endDate) {
+    public List<Purchase> searchPurchases(Integer supplierId, LocalDate startDate, LocalDate endDate) {
         List<Purchase> result = new ArrayList<>();
         for(Purchase purchase : purchases.values()) {
             if(supplierId != null && supplierId != purchase.getSupplierId()) {continue;}

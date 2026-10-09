@@ -1,6 +1,5 @@
 package com.example.purchase_system.service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +21,10 @@ import com.example.purchase_system.repository.SupplierRepository;
 
 @Service
 public class PurchaseService {
-    private SupplierRepository supplierRepository;
-    private PurchaseRepository purchaseRepository;
-    private ProductRepository productRepository;
-    private PurchaseItemRepository pItemRepository;
+    private final SupplierRepository supplierRepository;
+    private final PurchaseRepository purchaseRepository;
+    private final ProductRepository productRepository;
+    private final PurchaseItemRepository pItemRepository;
 
     public PurchaseService(SupplierRepository supplierRepository,
                            PurchaseRepository purchaseRepository,
@@ -36,27 +35,40 @@ public class PurchaseService {
         this.productRepository = productRepository;
         this.pItemRepository = pItemRepository;
     }
-    // 新增進貨訂單資訊
-    public Purchase createPurchase(int supplierId, LocalDate date, String note) {
-        // 1. 先搜尋是否為既有廠商，如無，則拋出例外給 user 決定處理
-        if(supplierRepository.findById(supplierId).isEmpty()) throw new IllegalArgumentException("Supplier doesn't exist.");
-        // 3. 存在，建立進貨資料
-        return purchaseRepository.save(supplierId, date, note);   
+
+    // 即使已經靠好幾個方法簡化這個方法了，但還是有點長？
+    public Purchase createFullPurchase(PurchaseRequest request) {
+        // check
+        checkRequest(request);
+        checkRequestData(request);
+        // fill up data
+        List<Integer> productIds = getOrCreateProductIds(request);
+        // 開始建構進貨訂單
+        Purchase purchase = purchaseRepository.save(request.getSupplierId(), request.getPurchaseDate(), request.getNote());
+        for(int i = 0; i < request.getItems().size(); i++) {
+            pItemRepository.save(purchase.getId()
+                                , productIds.get(i)
+                                , request.getItems().get(i).getQuantity()
+                                , request.getItems().get(i).getTotalPrice());
+        }
+        return purchase;
     }
-    // 新增進貨商品資訊
-    public PurchaseItem addPurchaseItem(int purchaseId, int productId, int quantity, int totalPrice) {
-        if(purchaseRepository.findById(purchaseId).isEmpty()) throw new IllegalArgumentException("Purchase does not exist.");
-        if(productRepository.findById(productId).isEmpty()) throw new IllegalArgumentException("Product does not exist.");
-        return pItemRepository.save(purchaseId, productId, quantity, totalPrice);
-    }
-    // Request Check
+    
+    // 名稱重新命名?
+    // 現在這個 java 有 200 行 CODE，這個方法有必要為了閱讀性分出去嗎？
     private void checkRequest(PurchaseRequest request) {
-        if(request == null) {throw new IllegalArgumentException("Request is null.");}
-        if(request.getSupplierId() == null) {throw new IllegalArgumentException("Supplier is null.");}
-        if(request.getPurchaseDate() == null) {throw new IllegalArgumentException("Date is null.");}
-        if(request.getItems() == null || request.getItems().isEmpty()) {throw new IllegalArgumentException("No Purchase Item.");}
+        if(request == null) {
+            throw new IllegalArgumentException("Request is null.");}
+        if(request.getSupplierId() == null) {
+            throw new IllegalArgumentException("Supplier is null.");}
+        if(request.getPurchaseDate() == null) {
+            throw new IllegalArgumentException("Date is null.");}
+        if(request.getItems() == null || request.getItems().isEmpty()) {
+            throw new IllegalArgumentException("No Purchase Item.");}
     }
-    // Request Data Check
+    // 同上
+    // 名稱重新命名?
+    // 現在這個 java 有 200 行 CODE，這個方法有必要為了閱讀性分出去嗎？
     private void checkRequestData(PurchaseRequest request) {
         // Supplier
         if(supplierRepository.findById(request.getSupplierId()).isEmpty()) {
@@ -64,9 +76,12 @@ public class PurchaseService {
         }
         // PurchaseItem
         for(PurchaseItemRequest item : request.getItems()) {
-            if(item == null ) {throw new IllegalArgumentException("Purchase Item is null.");}
-            if(item.getQuantity() < 1) {throw new IllegalArgumentException(item.getProductName() + " quantity invalid.");}
-            if(item.getTotalPrice() < 0) {throw new IllegalArgumentException(item.getProductName() + " price invalid.");}
+            if(item == null ) {
+                throw new IllegalArgumentException("Purchase Item is null.");}
+            if(item.getQuantity() < 1) {
+                throw new IllegalArgumentException(item.getProductName() + " quantity invalid.");}
+            if(item.getTotalPrice() < 0) {
+                throw new IllegalArgumentException(item.getProductName() + " price invalid.");}
             // Product ID Check            
             if(item.getProductId() != null) {
                 if(productRepository.findById(item.getProductId()).isEmpty()) {
@@ -81,32 +96,7 @@ public class PurchaseService {
             }
         }
     }
-    // 補完 purchaseItem 的所有 productId
-    private List<Integer> getOrCreateProductIds(PurchaseRequest request) {
-        List<Integer> productIds = new ArrayList<>();
-        for(int i = 0; i < request.getItems().size(); i++) {
-            PurchaseItemRequest currentItem = request.getItems().get(i);
-            Integer productId = currentItem.getProductId();
-
-            if(productId == null) {
-                for(int j = 0; j < i; j++) {
-                    if(isSameProduct(currentItem, request.getItems().get(j))) {
-                        productId = productIds.get(j);
-                        break;
-                    }
-                }
-                if(productId == null) {
-                    productId = productRepository.save(
-                        currentItem.getBarcode(),
-                        currentItem.getProductName()
-                    ).getId();
-                }
-            }
-            productIds.add(productId);
-        }
-        return productIds;
-    }
-    // same product
+    // 同前面　２　個，而且這幾個方法都只是設計來驗證 createFullPurchase 一個方法用而已
     private boolean isSameProduct(PurchaseItemRequest itemA, PurchaseItemRequest itemB) {
         boolean aWithId = itemA.getProductId() != null;
         boolean bWithId = itemB.getProductId() != null;
@@ -137,63 +127,85 @@ public class PurchaseService {
 
         return itemA.getProductName().equals(itemB.getProductName());
     }
-    // 新增完整訂單
-    public Purchase createFullPurchase(PurchaseRequest request) {
-        // check
-        checkRequest(request);
-        checkRequestData(request);
-        // fill up data
-        List<Integer> productIds = getOrCreateProductIds(request);
-        // 開始建構進貨訂單
-        Purchase purchase = purchaseRepository.save(request.getSupplierId(), request.getPurchaseDate(), request.getNote());
+    // 這個方法有點長，而且內容不是很直觀，每一段都要想一下為什麼運作
+    private List<Integer> getOrCreateProductIds(PurchaseRequest request) {
+        List<Integer> productIds = new ArrayList<>();
         for(int i = 0; i < request.getItems().size(); i++) {
-            pItemRepository.save(purchase.getId()
-                                , productIds.get(i)
-                                , request.getItems().get(i).getQuantity()
-                                , request.getItems().get(i).getTotalPrice());
+            PurchaseItemRequest currentItem = request.getItems().get(i);
+            Integer productId = currentItem.getProductId();
+
+            if(productId == null) {
+                for(int j = 0; j < i; j++) {
+                    if(isSameProduct(currentItem, request.getItems().get(j))) {
+                        productId = productIds.get(j);
+                        break;
+                    }
+                }
+                if(productId == null) {
+                    productId = productRepository.save(
+                        currentItem.getBarcode(),
+                        currentItem.getProductName()
+                    ).getId();
+                }
+            }
+            productIds.add(productId);
         }
-        return purchase;
+        return productIds;
     }
-    
-    public List<Purchase> search(PurchaseSearchRequest request) {
-        if(request == null) {throw new IllegalArgumentException("Request is null.");}
+
+    public List<Purchase> searchPurchases(PurchaseSearchRequest request) {
+        if(request == null) {
+            throw new IllegalArgumentException("Request is null.");}
         if(request.getStartDate() != null && request.getEndDate() != null
                 && request.getStartDate().isAfter(request.getEndDate())) {
             throw new IllegalArgumentException("startDate cannot be later than endDate.");
         }
-        return purchaseRepository.search(request.getSupplierId(), request.getStartDate(), request.getEndDate());
-    }
 
+        return purchaseRepository.searchPurchases(
+            request.getSupplierId()
+          , request.getStartDate()
+          , request.getEndDate()
+        );
+    }
+   
     public PurchaseDetailResponse getPurchaseDetail(int purchaseId) {
-        // id O, supplierId O, supplierName O, date O, note O , 
-        // List
         Purchase purchase = purchaseRepository.findById(purchaseId)
                 .orElseThrow(() -> new IllegalArgumentException("Purchase does not exist."));
-        // purchase 有 supplierId, date, note                       
-        // 靠 id 調出 name
+        
         int supplierId = purchase.getSupplierId();
         Supplier supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(() -> new IllegalArgumentException("Supplier does not exist."));
-        String supplierName = supplier.getName();
-        LocalDate date = purchase.getDate();
-        String note = purchase.getNote();
-        // 找出 List items
-        // 要有 pItem Id
-        // 找出 p
-        List<PurchaseItem> pItems = pItemRepository.findByPurchaseId(purchaseId);
+        
+        List<PurchaseItem> purchaseItems = pItemRepository.findByPurchaseId(purchaseId);
+        
+        return new PurchaseDetailResponse(
+            purchaseId
+          , supplierId
+          , supplier.getName()
+          , purchase.getDate()
+          , purchase.getNote()
+          , toItemDetailResponses(purchaseItems)
+        );
+    }
+
+    private List<PurchaseItemDetailResponse> toItemDetailResponses(List<PurchaseItem> pItems) {
         List<PurchaseItemDetailResponse> items = new ArrayList<>();
+
         for(PurchaseItem pItem : pItems) {
             int productId = pItem.getProductId();
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new IllegalArgumentException("Product does not exist."));
             PurchaseItemDetailResponse item = new PurchaseItemDetailResponse(
-                    pItem.getId(), productId, product.getBarcode()
-                    , product.getName(), pItem.getQuantity(), pItem.getTotalPrice());
+                pItem.getId()
+              , productId
+              , product.getBarcode()
+              , product.getName()
+              , pItem.getQuantity()
+              , pItem.getTotalPrice()
+            );
             items.add(item);
         }
-        PurchaseDetailResponse pDetailResponse = new PurchaseDetailResponse(
-                purchaseId, supplierId, supplierName
-                , date, note, items);
-        return pDetailResponse;
+
+        return items;
     }
 }
