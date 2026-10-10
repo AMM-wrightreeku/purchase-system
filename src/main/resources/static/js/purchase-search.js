@@ -30,17 +30,56 @@ document.getElementById("searchButton").addEventListener("click", function() {
         .then(purchases => {
             const resultDiv = document.getElementById("searchResult");
             resultDiv.innerHTML = "<h2>查詢結果</h2>";
+            
+            const resultList = document.getElementById("purchaseList");
+            resultList.innerHTML = `
+                <div class="search-title">
+                    <h2>查詢總表</h2>
+                    <span>供應商</span>
+                    <span>總數量</span>
+                    <span>總價格</span>
+                </div>
+                `;
 
             if(purchases.length === 0) {
                 resultDiv.innerHTML += "<p>沒有符合條件的進貨紀錄</p>"
             }
+
+            // 這裡我真的不會了
+            const supplierSummary = new Map();
+            
+            purchases.forEach(purchase => {
+                const supplierId = purchase.supplierId;
+                if(!supplierSummary.has(supplierId)) {
+                    supplierSummary.set(supplierId, {
+                        supplierName: purchase.supplierName,
+                        totalQuantity: 0,
+                        totalPrice: 0
+                    });
+                }
+                const summary = supplierSummary.get(supplierId);
+
+                purchase.items.forEach(item => {
+                    summary.totalQuantity += item.quantity;
+                    summary.totalPrice += item.totalPrice;
+                });
+            });
+            supplierSummary.forEach(summary => {
+                resultList.innerHTML += `
+                    <div class="search-row">
+                        <span>${summary.supplierName}</span>
+                        <span>${summary.totalQuantity}</span>
+                        <span>${summary.totalPrice}</span>
+                    </div>
+                `;
+            });
 
             purchases.forEach(purchase => {
                 resultDiv.innerHTML += `
                     <div class="purchase-result">
                         <p>
                             日期：${purchase.date}<br>
-                            供應商ID：${purchase.supplierId}<br>
+                            供應商：${purchase.supplierName}<br>
                             備註：${purchase.note ?? ""}
                         </p>
                         <button onclick="showPurchaseDetail(${purchase.id})">
