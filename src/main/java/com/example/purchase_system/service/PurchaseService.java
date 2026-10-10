@@ -38,12 +38,10 @@ public class PurchaseService {
 
     // 即使已經靠好幾個方法簡化這個方法了，但還是有點長？
     public Purchase createPurchase(PurchaseRequest request) {
-        // check
         checkRequest(request);
         checkRequestData(request);
-        // fill up data
         List<Integer> productIds = getOrCreateProductIds(request);
-        // 開始建構進貨訂單
+
         Purchase purchase = purchaseRepository.save(request.getSupplierId(), request.getPurchaseDate(), request.getNote());
         for(int i = 0; i < request.getItems().size(); i++) {
             pItemRepository.save(purchase.getId()
