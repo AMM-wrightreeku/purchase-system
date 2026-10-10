@@ -14,7 +14,7 @@
 .item-title ,
 .item-row {
     display: grid;
-    grid-template-columns: 3fr 3fr 1fr 1.5fr 0.5fr;
+    grid-template-columns: 2.5fr 3.5fr 2fr 2fr 0.8fr;
 }
 .preview-title {
     font-weight: bold;
@@ -24,7 +24,7 @@
 .preview-row,
 .preview-total {
     display: grid;
-    grid-template-columns: 3fr 3fr 1fr 1.5fr 1fr;
+    grid-template-columns: 2.5fr 3fr 1fr 1.5fr 1fr;
 }
 .total-quantity {
     grid-column: 3;
@@ -46,8 +46,38 @@
     border-right: none;
 }
 #previewButton ,
-#saveButton{
+#saveButton,
+#cancelButton{
     display: block;
     margin-left: auto;
     margin-top: 10px;
+}
+.item-button {
+    font-size: 0.7em;
+    padding: 2px 5px;
+}
+.dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: stretch;
+    gap: 10px;
+}
+.dialog-buttons button {
+    flex: 1;
+    min-height: 40px;
+    width: auto;
+    box-sizing: border-box;
+}
+#confirmDialog {
+    width: 800px;
+    max-width: 90vw;
+    max-height: 90vh;
+    box-sizing: border-box;
+    padding: 24px;
+    border-radius: 10px;
+}
+.item-row input[type="number"] {
+    width: 80px;
+    max-width: 100%;
+    box-sizing: border-box;
 }

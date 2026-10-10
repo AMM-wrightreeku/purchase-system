@@ -17,35 +17,46 @@ function renderItemList() {
                 <span>${currentItem.barcode}</span>
                 <span>${currentItem.productName}</span>
                 <span>
-                    ${currentItem.quantity}
-                    <button class="align-right" onclick="changeQuantity(${index}, -1)">-</button>
-                    <button class="align-right" onclick="changeQuantity(${index}, 1)">+</button>
+                    <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        value="${currentItem.quantity}"
+                        onchange="changeItemValue(${index}, 'quantity', this.value)"
+                    />
                 </span>
                 <span>
-                    ${currentItem.totalPrice}
-                    <button class="align-right" onclick="changeTotalPrice(${index}, -1)">-</button>
-                    <button class="align-right" onclick="changeTotalPrice(${index}, 1)">+</button>
+                    <input
+                        type="number"
+                        min="0"
+                        step="100"
+                        value="${currentItem.totalPrice}"
+                        onchange="changeItemValue(${index}, 'totalPrice', this.value)"
+                    />
                 </span>
-                    <button class="align-right" onclick="deleteItem(${index})">刪除</button>
+                    <button class="item-button" onclick="deleteItem(${index})">刪除</button>
                 <span>
             </div>`;
     });
 }
-// 增減數量
-function changeQuantity(index, amount) {
+// 修改數量
+function changeItemValue(index, property, value) {
     const item = items[index];
-    const newValue = item.quantity + amount;
-    if(newValue < 1) {return;}
-    item.quantity = newValue;
-    renderItemList();
-}
-// 增減價格
-function changeTotalPrice(index, amount) {
-    const item = items[index];
-    const newValue = item.totalPrice + amount;
-    if(newValue < 0) {return;}
-    item.totalPrice = newValue;
-    renderItemList();
+    const newValue = Number(value);
+    if(!Number.isSafeInteger(newValue)) {
+        renderItemList;
+        return;
+    }
+    if(property ==="quantity" && newValue <1) {
+        renderItemList;
+        return;
+    }
+    if(property ==="totalPrice" && newValue <0) {
+        renderItemList;
+        return;
+    }
+    item[property] = newValue;
+    renderItemList;
 }
 // 刪除商品
 function deleteItem(index) {
@@ -206,8 +217,10 @@ previewButton.addEventListener(
                 <span class="total-quantity">${allQty}<br>進貨總量</span>
                 <span class="total-price">${allPrice}<br>總價</span>
             </div>        
-            <button id='saveButton'>確認儲存</button>
-            <button id='cancelButton'>取消返回</button>
+            <div class="dialog-buttons">
+                <button id='saveButton'>確認儲存</button>
+                <button id='cancelButton'>取消返回</button>
+            </div>
         `;
         
         const saveButton = document.getElementById("saveButton");
@@ -253,11 +266,14 @@ previewButton.addEventListener(
                     document.getElementById("totalPrice").value = "";
                     document.getElementById("note").value = "";
                     document.getElementById("itemList").innerHTML ="尚未加入商品";
-                    document.getElementById("previewArea").innerHTML ="尚未產生確認內容";}
-                )
+                    document.getElementById("previewArea").innerHTML ="尚未產生確認內容";
+                    
+                    document.getElementById("confirmDialog").close();
+                })
                 .catch(function(error) {
                     console.error(error);
                     alert("進貨儲存失敗");
+                    document.getElementById("confirmDialog").close();
                 });
             }
         );
