@@ -23,6 +23,8 @@ document.getElementById("searchButton").addEventListener("click", function() {
     fetch("/purchases?" + parms.toString())
         .then(response => {
             if(!response.ok) {
+                console.error(response.status);
+                console.error(response.statusText);
                 throw new Error("查詢失敗");
             }
             return response.json();
