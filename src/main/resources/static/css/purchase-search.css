@@ -1,0 +1,24 @@
+/* right */
+.purchase-result,
+.purchase-detail,
+.purchaseItem-result {
+    background-color: #f7f7f7;
+    padding: 1px 10px;
+    border-radius: 6px;
+    margin-bottom: 1px;
+    line-height: 1.0;
+}
+
+.result-layout {
+    display: flex;
+    gap: 5px;
+}
+#searchResult {
+    flex: 1;
+    min-width: 0;
+}
+#purchaseDetail {
+    flex: 2;
+    min-width: 0;
+}
+

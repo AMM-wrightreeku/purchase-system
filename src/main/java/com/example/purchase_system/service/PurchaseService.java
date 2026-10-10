@@ -37,7 +37,7 @@ public class PurchaseService {
     }
 
     // 即使已經靠好幾個方法簡化這個方法了，但還是有點長？
-    public Purchase createFullPurchase(PurchaseRequest request) {
+    public Purchase createPurchase(PurchaseRequest request) {
         // check
         checkRequest(request);
         checkRequestData(request);

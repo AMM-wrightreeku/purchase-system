@@ -43,38 +43,38 @@ public class PurchaseServiceTest {
     @Test
     void createRequestCheckNullRequest() {
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> purSer.createFullPurchase(null));
+            () -> purSer.createPurchase(null));
     }
     @Test
     void createRequestCheckNullSupplierId() {
         PurchaseRequest requestNullSupplierId = new PurchaseRequest(null, LocalDate.of(2026, 9, 17), "TEST1", items);
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> purSer.createFullPurchase(requestNullSupplierId));
+            () -> purSer.createPurchase(requestNullSupplierId));
     }
     @Test
     void createRequestCheckNullDate() {
     PurchaseRequest requestNullDate = new PurchaseRequest(3, null, "TEST2", items);
     Assertions.assertThrows(IllegalArgumentException.class,
-        () -> purSer.createFullPurchase(requestNullDate));
+        () -> purSer.createPurchase(requestNullDate));
   
     }
     @Test
     void createRequestCheckNullItems() {
     PurchaseRequest requestNullItems = new PurchaseRequest(3, LocalDate.of(2026, 9, 17), "TEST3", null);
     Assertions.assertThrows(IllegalArgumentException.class,
-        () -> purSer.createFullPurchase(requestNullItems));
+        () -> purSer.createPurchase(requestNullItems));
     }
     @Test
     void createRequestCheckEmptyItems() {
         PurchaseRequest requestEmptyItems = new PurchaseRequest(3, LocalDate.of(2026, 9, 17), "TEST4", List.of());
         Assertions.assertThrows(IllegalArgumentException.class,
-        () -> purSer.createFullPurchase(requestEmptyItems));
+        () -> purSer.createPurchase(requestEmptyItems));
     }
     @Test
     void createRequestDataCheckUnexistSupplierId() {
         PurchaseRequest requestUnexistSupplierId = new PurchaseRequest(999, LocalDate.of(2026, 9, 17), "TEST4", items);
         Assertions.assertThrows(IllegalArgumentException.class,
-        () -> purSer.createFullPurchase(requestUnexistSupplierId));
+        () -> purSer.createPurchase(requestUnexistSupplierId));
     }
     @Test
     void createRequestDataCheckNullItem() {
@@ -83,43 +83,43 @@ public class PurchaseServiceTest {
         items.add(null);
         PurchaseRequest requestNullItem = new PurchaseRequest(1, LocalDate.of(2026, 9, 17), "TEST4", items);
         Assertions.assertThrows(IllegalArgumentException.class,
-        () -> purSer.createFullPurchase(requestNullItem));
+        () -> purSer.createPurchase(requestNullItem));
     }
     @Test
     void createRequestDataCheckWrongQty() {
         items.add(new PurchaseItemRequest(1, "RX79", "Gundam", 0, 1000));
         Assertions.assertThrows(IllegalArgumentException.class,
-        () -> purSer.createFullPurchase(request));
+        () -> purSer.createPurchase(request));
     }
     @Test
     void createRequestDataCheckWrongPrice() {
         items.add(new PurchaseItemRequest(1, "RX80", "GundamGP03", 10, -83));
         Assertions.assertThrows(IllegalArgumentException.class,
-        () -> purSer.createFullPurchase(request));
+        () -> purSer.createPurchase(request));
     }
     @Test
     void createRequestDataCheckWrongProductId() {
         items.add(new PurchaseItemRequest(999, "RX93", "UNICORN", 1, 103));
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> purSer.createFullPurchase(request));
+            () -> purSer.createPurchase(request));
     }
     @Test
     void createRequestDataCheckNewProductNullName() {
         items.add(new PurchaseItemRequest(null, "7983", null, 1, 103));
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> purSer.createFullPurchase(request));
+            () -> purSer.createPurchase(request));
     }
     @Test
     void createRequestDataCheckNewProductNoName() {
         items.add(new PurchaseItemRequest(null, "7983", "  ", 1, 103));
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> purSer.createFullPurchase(request));
+            () -> purSer.createPurchase(request));
     }
     @Test
     void createRequestDataCheckNewProductButExist() {
         items.add(new PurchaseItemRequest(null, "65536", "GP02A", 1, 103));
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> purSer.createFullPurchase(request));
+            () -> purSer.createPurchase(request));
     }
     // @Test
     // void fillUpAllProductIds() {

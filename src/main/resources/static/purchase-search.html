@@ -1,148 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant-TW">
     <head>
         <meta charset="UTF-8">
         <title>進貨查詢</title>
 
-        <style>
-            html {
-                scrollbar-gutter: stable;
-            }
-            body {
-                background-color: #f5f5f5;
-                max-width: 1300px;
-                margin: 0 auto;
-                font-family: Arial, "Microsoft JhengHei", sans-serif;
-                line-height: 0.8;
-            }
-            /* top */
-            .top-bar {
-                padding: 15px 20px;
-                border-bottom: 1px solid #ccc;
-                background-color: #c1dddf;
-            }
-            .top-bar nav {
-                display: flex;
-                gap: 15px;
-                align-items: center;
-            }
-            .shutdown-button {
-                margin-left: auto;
-            }
-            .link-button {
-                display: inline-block;
-                padding: 8px 16px;
-                border: 1px solid #888;
-                border-radius: 4px;
-                background-color: #f0f0f0;
-                color: #000;
-                text-decoration: none;
-                line-height: normal;
-            }
-            /* floor */
-            main {
-                display: flex;
-                gap: 20px;
-                margin: 10px;
-            }
-            .input-panel,
-            .result-panel {
-                flex: 1;
-                min-width: 0;
-                border: 1px solid #ccc;
-                padding: 10px;
-                border-radius: 4px;
-                background-color: #fff;
-            }
-            /* left */
-            .input-panel h1 {
-                margin-top: 0;
-            }
-            .form-row {
-                display: flex;
-                align-items: center;
-                margin-bottom: 10px;
-            }
-            .form-row label {
-                width: 100px;
-                flex-shrink: 0;
-            }
-            .form-row input,
-            .form-row select {
-                flex: 1;
-                padding: 8px;
-                box-sizing: border-box;
-            }
-            #searchButton {
-                display: block;
-                margin-left: auto;
-            }
-            .section {
-                margin-bottom: 25px;
-            }
-            /* right */
-            h2 {
-                margin-top: 0;
-                margin-bottom: 15px;
-            }
-            .purchase-result {
-                background-color: #f7f7f7;
-                padding: 1px 10px;
-                border-radius: 6px;
-                margin-bottom: 1px;
-                line-height: 1.0;
-            }
-            .purchase-detail {
-                background-color: #f7f7f7;
-                padding: 1px 10px;
-                border-radius: 6px;
-                margin-bottom: 1px;
-                line-height: 1.0;
-            }
-            .purchaseItem-result {
-                background-color: #f7f7f7;
-                padding: 1px 10px;
-                border-radius: 6px;
-                margin-bottom: 1px;
-                line-height: 1.0;
-            }
-            .result-layout {
-                display: flex;
-                gap: 5px;
-            }
-            #searchResult {
-                flex: 1;
-                min-width: 0;
-            }
-            #purchaseDetail {
-                flex: 2;
-                min-width: 0;
-            }
-
-            /* all Area */
-            button {
-                padding: 8px 16px;
-                cursor: pointer;
-                border-radius: 4px;
-            }
-            
-            @media (max-width: 800px) {
-                main {
-                    flex-direction: column;
-                }
-            }
-        </style>
+        <link rel="stylesheet" href="/css/common.css">
+        <link rel="stylesheet" href="/css/purchase-search.css">
     </head>
+
     <body>
-        <header class="top-bar">
-            <nav> 
-                <a class="link-button" href="/index.html">進貨登錄</a>
-                <a class="link-button" href="/purchase-search.html">進貨查詢</a>
-                <a class="link-button" href="/product.html">商品管理</a>
-                <a class="link-button" href="/supplier.html">廠商管理</a>
-                <button class="shutdown-button" type="button" onclick="shutdownSystem()">關閉系統</button>
-            </nav>
-        </header>
+        <div id="navbar"></div>
+
         <main>
             <section class="input-panel">
                 <h1>進貨查詢</h1>
@@ -163,13 +31,14 @@
                             <input type="date" id="endDate">
                         </div>
                         <div class="form-row">
-                            <button id="searchButton">
+                            <button id="searchButton" class="align-right">
                                 搜尋
                             </button>
                         </div>
                     </div>
                 </div>
             </section>
+            
             <section class="result-panel">
                 <div class="result-layout">
                     <div id="searchResult">
@@ -181,98 +50,8 @@
                 </div>
             </section>
         </main>
+
         <script src="/js/common.js"></script>
-        <script>
-            fetch("/suppliers")
-                .then(response => response.json())
-                .then(suppliers => {
-                    const supplierSelect = document.getElementById("supplierId");
-                    suppliers.forEach(supplier => {
-                        supplierSelect.innerHTML += `
-                        <option value="${supplier.id}">
-                            ${supplier.name}
-                        </option>`;
-                    })
-                })
-
-            document.getElementById("searchButton").addEventListener("click", function() {
-                const supplierId = document.getElementById("supplierId").value;
-                const startDate = document.getElementById("startDate").value;
-                const endDate = document.getElementById("endDate").value;
-
-                const parms = new URLSearchParams();
-                if(supplierId) {parms.append("supplierId", supplierId);}
-                if(startDate) {parms.append("startDate", startDate);}
-                if(endDate) {parms.append("endDate", endDate);}
-
-                fetch("/purchases?" + parms.toString())
-                    .then(response => {
-                        if(!response.ok) {
-                            throw new Error("查詢失敗");
-                        }
-                        return response.json();
-                    })
-                    .then(purchases => {
-                        const resultDiv = document.getElementById("searchResult");
-                        resultDiv.innerHTML = "<h2>查詢結果</h2>";
-
-                        if(purchases.length === 0) {
-                            resultDiv.innerHTML += "<p>沒有符合條件的進貨紀錄</p>"
-                        }
-
-                        purchases.forEach(purchase => {
-                            resultDiv.innerHTML += `
-                                <div class="purchase-result">
-                                    <p>
-                                        日期：${purchase.date}<br>
-                                        供應商ID：${purchase.supplierId}<br>
-                                        備註：${purchase.note ?? ""}
-                                    </p>
-                                    <button onclick="showPurchaseDetail(${purchase.id})">
-                                        查看明細
-                                    </button>
-                                </div>
-                                `;
-                        })
-                    })
-                    .catch(error => {
-                        const resultDiv = document.getElementById("searchResult");
-                        resultDiv.innerHTML = "<p>查詢失敗</p>";
-                        console.error(error);
-                    })
-
-            })
-
-            function showPurchaseDetail(purchaseId) {
-                fetch("/purchases/" + purchaseId)
-                    .then(response => response.json())
-                    .then(purchase => {
-                        const detailDiv = document.getElementById("purchaseDetail");
-
-                        detailDiv.innerHTML = `
-                            <h2>進貨明細</h2>
-                            <div class="purchase-detail">
-                                <p>
-                                    日期：${purchase.date}<br>
-                                    供應商：${purchase.supplierName}<br>
-                                    備註：${purchase.note ?? ""}
-                                </p>
-                            </div>`;
-                        purchase.items.forEach(item => {
-                            detailDiv.innerHTML += `
-                                <div class="purchaseItem-result">
-                                    <p>
-                                        商品名稱：${item.name}<br>
-                                        條碼：${item.barcode ?? ""}<br>
-                                        數量：${item.quantity}<br>
-                                        進價：${item.totalPrice}
-                                    </p>
-                                </div>`;
-                        })
-                    })
-            }
-
-        </script>
+        <script src="/js/purchase-search.js"></script>
     </body>
-
 </html>

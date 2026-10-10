@@ -25,11 +25,11 @@ public class PurchaseController {
 
     @PostMapping
     public Purchase createPurchase(@RequestBody PurchaseRequest request) {
-        return purchaseService.createFullPurchase(request);
+        return purchaseService.createPurchase(request);
     }
 
     @GetMapping
-    public List<Purchase> search(PurchaseSearchRequest request) {
+    public List<Purchase> searchPurchases(PurchaseSearchRequest request) {
         return purchaseService.searchPurchases(request);
     }
  

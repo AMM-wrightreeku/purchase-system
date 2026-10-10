@@ -1,525 +1,73 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant-TW">
+    <head>
+        <meta charset="UTF-8">
+        <title>進貨登錄系統</title>
 
-<head>
-    <meta charset="UTF-8">
-    <title>進貨登錄系統</title>
+        <link rel="stylesheet" href="/css/common.css">
+        <link rel="stylesheet" href="/css/index.css">
+    </head>
 
-    <style>
-        html {
-            scrollbar-gutter: stable;
-        }
-        body {
-            background-color: #f5f5f5;
-            max-width: 1300px;
-            margin: 0 auto;
-            font-family: Arial, "Microsoft JhengHei", sans-serif;
-            line-height: 0.8;
-        }
-        /* top */
-        .top-bar {
-            padding: 15px 20px;
-            border-bottom: 1px solid #ccc;
-            background-color: #c1dddf;
-        }
-        .top-bar nav {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .shutdown-button {
-            margin-left: auto;
-        }
-        .link-button {
-            display: inline-block;
-            padding: 8px 16px;
-            border: 1px solid #888;
-            border-radius: 4px;
-            background-color: #f0f0f0;
-            color: #000;
-            text-decoration: none;
-            line-height: normal;
-        }
-        /* floor */
-        main {
-            display: flex;
-            gap: 20px;
-            margin: 10px;
-        }
-        .input-panel,
-        .result-panel {
-            flex: 1;
-            min-width: 0;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 4px;
-            background-color: #fff;
-        }
-        /* left */
-        .input-panel h1 {
-            margin-top: 0;
-        }
-        .form-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .form-row label {
-            width: 100px;
-            flex-shrink: 0;
-        }
-        .form-row input,
-        .form-row select {
-            flex: 1;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-        #addItemButton {
-            display: block;
-            margin-left: auto;
-        }
-        .section {
-            margin-bottom: 25px;
-        }
-        /* right */
-        #itemList,
-        #previewArea {
-            border: 1px solid #ddd;
-            padding: 10px;
-            min-height: 80px;
-            font-size: 10pt;
-            line-height: 1.2;
-        }
-        .item-title {
-            font-weight: bold;
-            margin-bottom: 2px;
-        }
-        .item-title ,
-        .item-row {
-            display: grid;
-            grid-template-columns: 3fr 3fr 1fr 1.5fr;
-        }
-        .preview-title {
-            font-weight: bold;
-            margin-bottom: 2px;
-        }
-        .preview-title,
-        .preview-row,
-        .preview-total {
-            display: grid;
-            grid-template-columns: 3fr 3fr 1fr 1.5fr 1fr;
-        }
-        .total-quantity {
-            grid-column: 3;
-        }
-        .total-price {
-            grid-column: 4;
-        }
-        .item-title span,
-        .item-row span,
-        .preview-title span,
-        .preview-row span {
-            border-right: 1px solid #ddd;
-            padding: 0 8px;
-        }
-        .item-title span:last-child,
-        .item-row span:last-child,
-        .preview-title span:last-child,
-        .preview-row span:last-child {
-            border-right: none;
-        }
-        #previewButton ,
-        #saveButton{
-            display: block;
-            margin-left: auto;
-            margin-top: 10px;
-        }
-        h2 {
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
+    <body>
+        <div id="navbar"></div>
 
-        /* all Area */
-        button {
-            padding: 8px 16px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        
-         @media (max-width: 800px) {
-            main {
-                flex-direction: column;
-            }
-         }
-    </style>
-</head>
-
-<body>
-    <header class="top-bar">
-        <nav> 
-            <a class="link-button" href="/index.html">進貨登錄</a>
-            <a class="link-button" href="/purchase-search.html">進貨查詢</a>
-            <a class="link-button" href="/product.html">商品管理</a>
-            <a class="link-button" href="/supplier.html">廠商管理</a>
-            <button class="shutdown-button" type="button" onclick="shutdownSystem()">關閉系統</button>
-        </nav>
-    </header>
-    <main>
-        <section class="input-panel">
-            <h1>進貨登錄系統</h1>
-            <div class="section">
-                <h2>進貨基本資料</h2>
-                <div class="form-row">
-                    <label for="supplierId">供應商</label>
-                    <select id="supplierId">
-                        <option value="">請選擇供應商</option>
-                    </select>
+        <main>
+            <section class="input-panel">
+                <h1>進貨登錄系統</h1>
+                <div class="section">
+                    <h2>進貨基本資料</h2>
+                    <div class="form-row">
+                        <label for="supplierId">供應商</label>
+                        <select id="supplierId">
+                            <option value="">請選擇供應商</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label for="purchaseDate">日期</label>
+                        <input type="date" id="purchaseDate">
+                    </div>
+                    <div class="form-row">
+                        <label for="note">備註</label>
+                        <input type="text" id="note">
+                    </div>
                 </div>
-                <div class="form-row">
-                    <label for="purchaseDate">日期</label>
-                    <input type="date" id="purchaseDate">
+                <div class="section">
+                    <h2>加入商品</h2>
+                    <div class="form-row">
+                        <label for="barcode">條碼</label>
+                        <input type="text" id="barcode">
+                    </div>
+                    <div class="form-row">
+                        <label for="productName">商品名稱</label>
+                        <input type="text" id="productName">
+                    </div>
+                    <div class="form-row">
+                        <label for="quantity">數量</label>
+                        <input type="number" id="quantity">
+                    </div>
+                    <div class="form-row">
+                        <label for="totalPrice">進貨價格</label>
+                        <input type="number" id="totalPrice">
+                    </div>
+                    <button id="addItemButton" class="align-right">加入清單</button>
                 </div>
-                <div class="form-row">
-                    <label for="note">備註</label>
-                    <input type="text" id="note">
-                </div>
-            </div>
-            <div class="section">
-                <h2>加入商品</h2>
-                <div class="form-row">
-                    <label for="barcode">條碼</label>
-                    <input type="text" id="barcode">
-                </div>
-                <div class="form-row">
-                    <label for="productName">商品名稱</label>
-                    <input type="text" id="productName">
-                </div>
-                <div class="form-row">
-                    <label for="quantity">數量</label>
-                    <input type="number" id="quantity">
-                </div>
-                <div class="form-row">
-                    <label for="totalPrice">進貨價格</label>
-                    <input type="number" id="totalPrice">
-                </div>
-                <button id="addItemButton">加入清單</button>
-            </div>
-        </section>
-        <section class="result-panel">
-            <div class="section">
-                <h2>目前商品清單</h2>
-                <div id="itemList">尚未加入商品</div>
-                <br>
-                <button id="previewButton">確認進貨內容</button>
-            </div>
-            <div class="section">
-                <h2>最終確認</h2>
-                <div id="previewArea">尚未產生確認內容</div>
-            </div>
-        </section>
-    </main>
-    <script src="/js/common.js"></script>
-    <script>
-        fetch("/suppliers")
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(suppliers) {
-
-            const supplierSelect =
-                document.getElementById("supplierId");
-
-            for(const supplier of suppliers) {
-
-                supplierSelect.innerHTML +=
-                    "<option value='" +
-                    supplier.id +
-                    "'>" +
-                    supplier.name +
-                    "</option>";
-            }
-        });
-
-
-        // purchase items
-        const items = [];
-        let products = [];
-        fetch("/products")
-            .then(response => response.json())
-            .then(data => {
-                products = data;
-            });
-
-        const addItemButton =document.getElementById("addItemButton");
-
-        addItemButton.addEventListener(
-            "click",
-            function() {
-
-                // barcode
-                const barcode =document.getElementById("barcode").value;
-                // product name
-                const productName =document.getElementById("productName").value;
-                
-                let existingProduct = null;
-
-                if(barcode.trim() !== "") {
-                    existingProduct = products.find(product =>
-                        product.barcode === barcode
-                    )
-                }
-                
-                const productId = existingProduct ? existingProduct.id : null;
-                
-                if(productId === null && productName.trim() === "") {
-                    alert("請輸入商品名稱");
-                    return;
-                }
-
-                // quantity
-                const quantity =
-                    Number(
-                        document.getElementById("quantity").value
-                    );
-
-                if(
-                    !Number.isFinite(quantity) ||
-                    quantity < 1
-                ) {
-                    alert("商品數量錯誤");
-                    return;
-                }
-
-
-                // totlaPrice
-                const totalPriceText =
-                    document.getElementById("totalPrice").value;
-
-                if(totalPriceText.trim() == "") {
-                    alert("請輸入價格");
-                    return;
-                }
-
-                const totalPrice =
-                    Number(totalPriceText);
-
-                if(
-                    !Number.isFinite(totalPrice) ||
-                    totalPrice < 0
-                ) {
-                    alert("價格錯誤");
-                    return;
-                }
-
-
-                const item = {
-
-                    productId: productId,
-
-                    barcode: barcode,
-
-                    productName: productName,
-
-                    quantity: quantity,
-
-                    totalPrice: totalPrice
-                };
-
-                items.push(item);
-
-                const itemList = document.getElementById("itemList");
-                itemList.innerHTML = `
-                    <div class="item-title">
-                        <span>條碼</span>
-                        <span>商品</span>
-                        <span>數量</span>
-                        <span>進貨價格</span>
-                    </div>`;
-                for(const currentItem of items) {
-                    itemList.innerHTML += `
-                        <div class="item-row">
-                            <span>${currentItem.barcode}</span>
-                            <span>${currentItem.productName}</span>
-                            <span>${currentItem.quantity}</span>
-                            <span>${currentItem.totalPrice}</span>
-                        </div>`;
-                }
-            }
-        );
-
-        // preview item list
-        const previewButton =
-            document.getElementById("previewButton");
-
-
-        previewButton.addEventListener(
-            "click",
-            function() {
-
-
-                if(items.length < 1) {
-
-                    alert("商品清單不能空白");
-
-                    return;
-                }
-
-
-                const supplierSelect =
-                    document.getElementById("supplierId");
-
-
-                const supplierId =
-                    supplierSelect.value;
-
-
-                if(supplierId.trim() == "") {
-
-                    alert("廠商不能空白");
-
-                    return;
-                }
-
-
-                const supplierName =
-
-                    supplierSelect
-                    .options[
-                        supplierSelect.selectedIndex
-                    ]
-                    .text;
-
-
-                const purchaseDate =
-
-                    document.getElementById(
-                        "purchaseDate"
-                    ).value;
-
-
-                if(purchaseDate == "") {
-
-                    alert("日期不能空白");
-
-                    return;
-                }
-
-
-                const note =
-
-                    document.getElementById(
-                        "note"
-                    ).value;
-
-
-                const previewArea =
-
-                    document.getElementById(
-                        "previewArea"
-                    );
-
-
-                previewArea.innerHTML =
-                    "供應商: " +supplierName +"<br>" +
-                    "日期: " +purchaseDate +"<br>" +
-                    "備註: " +note +"<br><br>";
-                previewArea.innerHTML += `
-                    <div class="preview-title">
-                        <span>條碼</span>
-                        <span>商品</span>
-                        <span>數量</span>
-                        <span>進貨價格</span>
-                        <span>單價</span>
-                    </div>`;
-                let allQty = 0;
-                let allPrice = 0;
-                for(const currentItem of items) {
-                    const unitPrice = currentItem.totalPrice / currentItem.quantity;
-                    previewArea.innerHTML +=`
-                        <div class="preview-row">
-                            <span>${currentItem.barcode}</span>
-                            <span>${currentItem.productName}</span>
-                            <span>${currentItem.quantity}</span>
-                            <span>${currentItem.totalPrice}</span>
-                            <span>${unitPrice.toFixed(2)}</span>
-                        </div>`;
-                    allQty += currentItem.quantity;
-                    allPrice += currentItem.totalPrice;
-                }
-                previewArea.innerHTML +=`
+            </section>
+            
+            <section class="result-panel">
+                <div class="section">
+                    <h2>目前商品清單</h2>
+                    <div id="itemList">尚未加入商品</div>
                     <br>
-                    <div class="preview-total">
-                        <span class="total-quantity">${allQty}<br>進貨總量</span>
-                        <span class="total-price">${allPrice}<br>總價</span>
-                    </div>        
-                    <button id='saveButton'>確認儲存</button>`;
-                    const saveButton =
+                    <button id="previewButton">確認進貨內容</button>
+                </div>
+                <div class="section">
+                    <h2>最終確認</h2>
+                    <div id="previewArea">尚未產生確認內容</div>
+                </div>
+            </section>
+        </main>
 
-                    document.getElementById(
-                        "saveButton"
-                    );
-
-
-                saveButton.addEventListener(
-                    "click",
-                    function() {
-
-
-                        const purchaseRequest = {
-
-                            supplierId:
-                                Number(supplierId),
-
-                            purchaseDate:
-                                purchaseDate,
-
-                            note:
-                                note,
-
-                            items:
-                                items
-                        };
-
-                        console.log(JSON.stringify(purchaseRequest));
-
-                        fetch("/purchases", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify(purchaseRequest)
-                            }
-                        )
-                        .then(function(response) {
-                            if(!response.ok) {
-                                throw new Error("儲存失敗");
-                            }
-                            return response.json();
-                        })
-                        .then(function(data) {
-                            console.log(data);
-                            alert("進貨資料儲存成功");  
-                            // clear all
-                            items.length = 0;
-                            document.getElementById("barcode").value = "";
-                            document.getElementById("productName").value = "";
-                            document.getElementById("quantity").value = "";
-                            document.getElementById("totalPrice").value = "";
-                            document.getElementById("note").value = "";
-                            document.getElementById("itemList").innerHTML ="尚未加入商品";
-                            document.getElementById("previewArea").innerHTML ="尚未產生確認內容";}
-                        )
-                        .catch(function(error) {
-                            console.error(error);
-                            alert("進貨儲存失敗");
-                        });
-                    }
-                );
-            }
-        );
-
-    </script>
-
-</body>
-
+        <script src="/js/common.js"></script>
+        <script src="/js/index.js"></script>
+    </body>
 </html>
