@@ -29,7 +29,7 @@ public class PurchaseController {
     }
 
     @GetMapping
-    public List<Purchase> searchPurchases(PurchaseSearchRequest request) {
+    public List<PurchaseDetailResponse> searchPurchases(PurchaseSearchRequest request) {
         return purchaseService.searchPurchases(request);
     }
  

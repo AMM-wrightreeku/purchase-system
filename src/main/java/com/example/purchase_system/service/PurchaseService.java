@@ -151,7 +151,7 @@ public class PurchaseService {
         return productIds;
     }
 
-    public List<Purchase> searchPurchases(PurchaseSearchRequest request) {
+    public List<PurchaseDetailResponse> searchPurchases(PurchaseSearchRequest request) {
         if(request == null) {
             throw new IllegalArgumentException("Request is null.");}
         if(request.getStartDate() != null && request.getEndDate() != null
@@ -159,11 +159,19 @@ public class PurchaseService {
             throw new IllegalArgumentException("startDate cannot be later than endDate.");
         }
 
-        return purchaseRepository.searchPurchases(
+        List<Purchase> purchases = purchaseRepository.searchPurchases(
             request.getSupplierId()
           , request.getStartDate()
           , request.getEndDate()
         );
+
+        List<PurchaseDetailResponse> responses = new ArrayList<>();
+
+        for(Purchase purchase : purchases) {
+            responses.add(getPurchaseDetail(purchase.getId()));
+        }
+
+        return responses;
     }
    
     public PurchaseDetailResponse getPurchaseDetail(int purchaseId) {

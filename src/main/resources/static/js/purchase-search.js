@@ -1,3 +1,5 @@
+let currentPurchases = [];
+
 fetch("/suppliers")
     .then(response => response.json())
     .then(suppliers => {
@@ -30,25 +32,21 @@ document.getElementById("searchButton").addEventListener("click", function() {
             return response.json();
         })
         .then(purchases => {
+            currentPurchases = purchases;
+
             const resultDiv = document.getElementById("searchResult");
+            document.getElementById("purchaseList").innerHTML = "";
+            document.getElementById("purchaseDetail").innerHTML = "";
+            
             resultDiv.innerHTML = "<h2>查詢結果</h2>";
             
-            const resultList = document.getElementById("purchaseList");
-            resultList.innerHTML = `
-                <div class="search-title">
-                    <h2>查詢總表</h2>
-                    <span>供應商</span>
-                    <span>總數量</span>
-                    <span>總價格</span>
-                </div>
-                `;
-
             if(purchases.length === 0) {
                 resultDiv.innerHTML += "<p>沒有符合條件的進貨紀錄</p>"
             }
 
-            // 這裡我真的不會了
             const supplierSummary = new Map();
+            let grandQuantity = 0;
+            let grandPrice = 0;
             
             purchases.forEach(purchase => {
                 const supplierId = purchase.supplierId;
@@ -64,17 +62,42 @@ document.getElementById("searchButton").addEventListener("click", function() {
                 purchase.items.forEach(item => {
                     summary.totalQuantity += item.quantity;
                     summary.totalPrice += item.totalPrice;
+
+                    grandQuantity += item.quantity;
+                    grandPrice += item.totalPrice;
                 });
             });
+
+            const resultList = document.getElementById("purchaseList");
+            resultList.innerHTML = `
+                <h2>查詢總表</h2>
+                <div class="summary-table">
+                    <div class="summary-row summary-header">
+                        <span>供應商</span>
+                        <span>總數量</span>
+                        <span>總價格</span>
+                    </div>
+                </div>
+                `;
+            const summaryTable = resultList.querySelector(".summary-table");
+
             supplierSummary.forEach(summary => {
-                resultList.innerHTML += `
-                    <div class="search-row">
+                summaryTable.innerHTML += `
+                    <div class="summary-row">
                         <span>${summary.supplierName}</span>
-                        <span>${summary.totalQuantity}</span>
-                        <span>${summary.totalPrice}</span>
+                        <span>${summary.totalQuantity.toLocaleString()}</span>
+                        <span>${summary.totalPrice.toLocaleString()}</span>
                     </div>
                 `;
             });
+
+            summaryTable.innerHTML += `
+                <div class="summary-row summary-total">
+                    <span>全部合計</span>
+                    <span>${grandQuantity.toLocaleString()}</span>
+                    <span>${grandPrice.toLocaleString()}</span>
+                </div>
+            `;
 
             purchases.forEach(purchase => {
                 resultDiv.innerHTML += `
@@ -100,30 +123,36 @@ document.getElementById("searchButton").addEventListener("click", function() {
 })
 
 function showPurchaseDetail(purchaseId) {
-    fetch("/purchases/" + purchaseId)
-        .then(response => response.json())
-        .then(purchase => {
-            const detailDiv = document.getElementById("purchaseDetail");
+    const purchase = currentPurchases.find(
+        purchase => purchase.id === purchaseId
+    );
 
-            detailDiv.innerHTML = `
-                <h2>進貨明細</h2>
-                <div class="purchase-detail">
-                    <p>
-                        日期：${purchase.date}<br>
-                        供應商：${purchase.supplierName}<br>
-                        備註：${purchase.note ?? ""}
-                    </p>
-                </div>`;
-            purchase.items.forEach(item => {
-                detailDiv.innerHTML += `
-                    <div class="purchaseItem-result">
-                        <p>
-                            商品名稱：${item.name}<br>
-                            條碼：${item.barcode ?? ""}<br>
-                            數量：${item.quantity}<br>
-                            進價：${item.totalPrice}
-                        </p>
-                    </div>`;
-            })
-        })
+    if(!purchase) {
+        console.error("找不到進貨單" + purchaseId);
+        return;
+    }
+
+    const detailDiv = document.getElementById("purchaseDetail");
+
+    detailDiv.innerHTML = `
+        <h2>進貨明細</h2>
+        <div class="purchase-detail">
+            <p>
+                日期：${purchase.date}<br>
+                供應商：${purchase.supplierName}<br>
+                備註：${purchase.note ?? ""}
+            </p>
+        </div>`;
+
+    purchase.items.forEach(item => {
+        detailDiv.innerHTML += `
+            <div class="purchaseItem-result">
+                <p>
+                    商品名稱：${item.name}<br>
+                    條碼：${item.barcode ?? ""}<br>
+                    數量：${item.quantity}<br>
+                    進價：${item.totalPrice}
+                </p>
+            </div>`;
+    })
 }
