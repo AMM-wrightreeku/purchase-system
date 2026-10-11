@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import com.example.purchase_system.entity.Supplier;
 import com.example.purchase_system.util.CsvFileUtil;
 import com.example.purchase_system.util.CsvStatusType;
+import com.example.purchase_system.util.ModelStatus;
 
 @Repository
 public class SupplierRepository {
@@ -44,23 +45,33 @@ public class SupplierRepository {
     }
 
     public Supplier update(int id, String newName) {
-        if (newName == null || newName.isBlank()) throw new IllegalArgumentException("Name cannot be blank.");
-        if (!findById(id).isPresent()) throw new IllegalArgumentException("The supplier does not exists");
-        // 檢查唯一姓名
+        // 活動 DOWN 不得更改
+        Optional<Supplier> existId = findById(id);
+        if (!existId.isPresent() || existId.get().getStatus() != ModelStatus.ACTIVE) {
+            throw new IllegalArgumentException("The supplier does not exists or be edited");
+        }
+        if (newName == null || newName.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be blank.");
+        }
         Optional<Supplier> existName = findByExactName(newName);
-        if (existName.isPresent() && existName.get().getId() != id) throw new IllegalArgumentException("The supplier name already exists");
+        if (existName.isPresent() 
+            && existName.get().getId() != id) throw new IllegalArgumentException("The supplier name already exists");
         Supplier newSup = new Supplier(id, newName);
         saveSupplierToCsv(newSup, CsvStatusType.UPDATE);
         suppliers.put(id, newSup);
         return newSup;
     }
 
-    public void delete(int id) {
-        if (!findById(id).isPresent()) throw new IllegalArgumentException("The supplier does not exists");
+    public Supplier delete(int id) {
+        Optional<Supplier> existId = findById(id);
+        if (!existId.isPresent() || existId.get().getStatus() != ModelStatus.ACTIVE) {
+            throw new IllegalArgumentException("The supplier does not exists or be edited");
+        }
         String lastName = suppliers.get(id).getName();
-        Supplier delSup = new Supplier(id, lastName);
+        Supplier delSup = new Supplier(id, "(已刪除) " + lastName, ModelStatus.DOWN);
         saveSupplierToCsv(delSup, CsvStatusType.DELETE);
-        suppliers.remove(id);
+        suppliers.put(id, delSup);
+        return delSup;
     }
 
     public Optional<Supplier> findById(int id) {
@@ -132,11 +143,14 @@ public class SupplierRepository {
                         suppliers.put(id, supplier);
                         this.maxId = id;
                 } else if(CsvStatusType.UPDATE.getStatus().equals(status)
-                    && suppliers.containsKey(id)) {
+                    && suppliers.containsKey(id)
+                    && suppliers.get(id).getStatus().equals(ModelStatus.ACTIVE)) {
                         suppliers.put(id, supplier);
                 } else if(CsvStatusType.DELETE.getStatus().equals(status)
-                    && suppliers.containsKey(id)) {
-                        suppliers.remove(id);
+                    && suppliers.containsKey(id)
+                    && suppliers.get(id).getStatus().equals(ModelStatus.ACTIVE)) {
+                        suppliers.put(id, supplier);
+                        suppliers.get(id).setStatus(ModelStatus.DOWN);
                 } else {
                     throw new IllegalStateException("supplierList.csv format error at line " + (i+1));
                 }
