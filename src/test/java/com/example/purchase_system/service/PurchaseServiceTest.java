@@ -32,7 +32,7 @@ public class PurchaseServiceTest {
         pItemRep = new PurchaseItemRepository();
         purSer = new PurchaseService(supRep, purRep, proRep, pItemRep);
         // supplier id1
-        supRep.save("BANDAI");
+        supRep.create("BANDAI");
         // Product id1
         proRep.save("65536", "NeoGranzon");
         // request

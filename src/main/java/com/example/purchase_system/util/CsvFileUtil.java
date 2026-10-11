@@ -8,8 +8,12 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class CsvFileUtil {
-    public static List<String> loadLines(String folder, String fileName
-                            , String firstRow) throws IOException {
+    public static List<String> loadDocument(
+        String folder
+      , String fileName
+      , String firstRow
+    ) throws IOException {
+        
         Path path = Path.of(folder, fileName);
         if(!Files.exists(path)) {
             Files.createDirectories(path.getParent());

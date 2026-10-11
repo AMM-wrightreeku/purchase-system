@@ -22,7 +22,7 @@ public class SupplierService {
         if(supRep.findByExactName(name).isPresent()) 
             throw new IllegalArgumentException("Name already exists.");
         
-        return supRep.save(name);
+        return supRep.create(name);
     }
 
     public Optional<Supplier> findById(int id) {

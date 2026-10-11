@@ -91,7 +91,7 @@ public class ProductRepository {
 
     private void loadProductFromCsv() {
         try {
-            List<String> lines = CsvFileUtil.loadLines("data", "productList.csv"
+            List<String> lines = CsvFileUtil.loadDocument("data", "productList.csv"
                                                         , "STATUS,ID,BARCODE,NAME");
             for(int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);

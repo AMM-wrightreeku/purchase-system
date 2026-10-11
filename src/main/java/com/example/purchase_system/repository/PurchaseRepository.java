@@ -66,7 +66,7 @@ public class PurchaseRepository {
 
     private void loadPurchaseFromCsv() {
         try {
-            List<String> lines = CsvFileUtil.loadLines("data"
+            List<String> lines = CsvFileUtil.loadDocument("data"
                                                     , "purchaseList.csv"
                                                     , "STATUS,ID,SUPPLIER_ID,DATE,NOTE");
             for(int i = 1; i < lines.size(); i++) {

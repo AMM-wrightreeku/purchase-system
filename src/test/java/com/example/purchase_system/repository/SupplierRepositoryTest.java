@@ -9,8 +9,8 @@ public class SupplierRepositoryTest {
     @Test
     void testSave() {
         SupplierRepository supRep = new SupplierRepository(false);
-        Supplier sup1 = supRep.save("Granzon");
-        Supplier sup2 = supRep.save("Cyberster");
+        Supplier sup1 = supRep.create("Granzon");
+        Supplier sup2 = supRep.create("Cyberster");
         Assertions.assertEquals(1, sup1.getId());
         Assertions.assertEquals(2, sup2.getId());
     }
@@ -18,23 +18,23 @@ public class SupplierRepositoryTest {
     @Test 
     void testDuplicateName() {
         SupplierRepository supRep = new SupplierRepository(false);
-        supRep.save("NeoGranzon");
+        supRep.create("NeoGranzon");
         Assertions.assertThrows(IllegalArgumentException.class, 
-        () -> supRep.save("NeoGranzon"));
+        () -> supRep.create("NeoGranzon"));
     }
 
     @Test
     void testFindById() {
         SupplierRepository supRep = new SupplierRepository(false);
-        supRep.save("NeoGranzon");
+        supRep.create("NeoGranzon");
         Assertions.assertTrue(supRep.findById(1).isPresent());
     }
 
     @Test
     void testFindByName() {
         SupplierRepository supRep = new SupplierRepository(false);
-        supRep.save("NeoGranzon");
-        supRep.save("Granzon");
+        supRep.create("NeoGranzon");
+        supRep.create("Granzon");
 
         boolean result = false;
         for(Supplier sup : supRep.findByName("Granzon")) {

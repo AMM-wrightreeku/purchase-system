@@ -14,13 +14,13 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import com.example.purchase_system.entity.Supplier;
-import com.example.purchase_system.util.IdGenerator;
 import com.example.purchase_system.util.CsvFileUtil;
+import com.example.purchase_system.util.CsvStatusType;
 
 @Repository
 public class SupplierRepository {
-
     private Map<Integer, Supplier> suppliers;
+    private int maxId = 0;
 
     public SupplierRepository() {
         this(true);
@@ -32,17 +32,35 @@ public class SupplierRepository {
         }
     }
 
-    public Supplier save(String name) {
-        //check
+    public Supplier create(String name) {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("Name cannot be blank.");
         if (findByExactName(name).isPresent()) throw new IllegalArgumentException("The supplier name already exists");
-        // main motion
-        // 呼叫 util 直接找 ID
-        int id = IdGenerator.getNextId(suppliers.keySet());
+        int id = this.maxId + 1;
         Supplier sup = new Supplier(id, name);
-        saveSupplierToCsv(sup);
+        saveSupplierToCsv(sup, CsvStatusType.CREATE);
         suppliers.put(id, sup);
+        this.maxId = id;
         return sup;
+    }
+
+    public Supplier update(int id, String newName) {
+        if (newName == null || newName.isBlank()) throw new IllegalArgumentException("Name cannot be blank.");
+        if (!findById(id).isPresent()) throw new IllegalArgumentException("The supplier does not exists");
+        // 檢查唯一姓名
+        Optional<Supplier> existName = findByExactName(newName);
+        if (existName.isPresent() && existName.get().getId() != id) throw new IllegalArgumentException("The supplier name already exists");
+        Supplier newSup = new Supplier(id, newName);
+        saveSupplierToCsv(newSup, CsvStatusType.UPDATE);
+        suppliers.put(id, newSup);
+        return newSup;
+    }
+
+    public void delete(int id) {
+        if (!findById(id).isPresent()) throw new IllegalArgumentException("The supplier does not exists");
+        String lastName = suppliers.get(id).getName();
+        Supplier delSup = new Supplier(id, lastName);
+        saveSupplierToCsv(delSup, CsvStatusType.DELETE);
+        suppliers.remove(id);
     }
 
     public Optional<Supplier> findById(int id) {
@@ -60,7 +78,7 @@ public class SupplierRepository {
 
         return Optional.empty();
     }
-
+    
     public List<Supplier> findByName(String name) {
         List<Supplier> result = new ArrayList<>();
         if(name == null || name.isBlank()) return result;
@@ -74,14 +92,14 @@ public class SupplierRepository {
         return result;
     }
     // 儲存 .csv
-    private void saveSupplierToCsv(Supplier supplier) {
+    private void saveSupplierToCsv(Supplier supplier, CsvStatusType type) {
         Path path = Path.of("data"
                             , "supplierList.csv");
         try {
-            String line = "CREATE,"
-                            + supplier.getId() + ","
-                            + supplier.getName()
-                            + System.lineSeparator();
+            String line = type.getStatus() + ","
+                        + supplier.getId() + ","
+                        + supplier.getName()
+                        + System.lineSeparator();
             Files.writeString(path, line, StandardCharsets.UTF_8
                                 , StandardOpenOption.APPEND
             );
@@ -92,7 +110,7 @@ public class SupplierRepository {
     // 讀取 .csv
     private void loadSupplierFromCsv() {
         try {
-            List<String> lines = CsvFileUtil.loadLines("data"
+            List<String> lines = CsvFileUtil.loadDocument("data"
                                                         , "supplierList.csv"
                                                         , "STATUS,ID,NAME");
             for(int i = 1; i < lines.size(); i++) {
@@ -102,12 +120,26 @@ public class SupplierRepository {
                 if(columns.length < 3) {throw new IllegalStateException(
                 "supplierList.csv format error at line " + (i+1));
                 }
+
                 String status = columns[0].trim();
-                if(!"CREATE".equals(status)) {continue;}
                 int id = Integer.parseInt(columns[1].trim());
                 String name = columns[2].trim();
                 Supplier supplier = new Supplier(id, name);
-                suppliers.put(id, supplier);
+                
+                if(CsvStatusType.CREATE.getStatus().equals(status)
+                    && !suppliers.containsKey(id)
+                    && id > maxId) {
+                        suppliers.put(id, supplier);
+                        this.maxId = id;
+                } else if(CsvStatusType.UPDATE.getStatus().equals(status)
+                    && suppliers.containsKey(id)) {
+                        suppliers.put(id, supplier);
+                } else if(CsvStatusType.DELETE.getStatus().equals(status)
+                    && suppliers.containsKey(id)) {
+                        suppliers.remove(id);
+                } else {
+                    throw new IllegalStateException("supplierList.csv format error at line " + (i+1));
+                }
             }          
         } catch (IOException e) {
             throw new IllegalStateException(
