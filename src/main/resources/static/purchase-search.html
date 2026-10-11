@@ -45,15 +45,18 @@
             </section>
             
             <section class="result-panel">
-                <div class="result-layout">
-                    <div id="searchResult">
-                        <h2>查詢結果</h2>
-
-                    </div>
-                    <div id="purchaseDetail">
-                    </div>
+                <div id="searchResult">
+                    <h2>查詢結果</h2>
                 </div>
             </section>
+            <dialog id="purchaseDialog">
+                <div id="purchaseDetail"></div>
+                <div class="dialog-actions">
+                    <button id="closeDetailButton" type="button">
+                        關閉
+                    </button>
+                </div>
+            </dialog>
         </main>
 
         <script src="/js/common.js"></script>

@@ -100,19 +100,48 @@ document.getElementById("searchButton").addEventListener("click", function() {
             `;
 
             purchases.forEach(purchase => {
+                const orderTotal = purchase.items.reduce((sum, item) => sum + item.totalPrice,0);
+                const previewItems = purchase.items.slice(0, 3);
+                const previewHtml = previewItems.map(item => `
+                    <div class="purchase-preview-row">
+                        <span>${item.name}</span>
+                        <span>${item.quantity}</span>
+                        <span>${item.totalPrice.toLocaleString()}</span>
+                    </div>
+                `).join("");
+
                 resultDiv.innerHTML += `
                     <div class="purchase-result">
-                        <p>
-                            日期：${purchase.date}<br>
-                            供應商：${purchase.supplierName}<br>
-                            備註：${purchase.note ?? ""}
-                        </p>
-                        <button onclick="showPurchaseDetail(${purchase.id})">
-                            查看明細
-                        </button>
+                        <div class="purchase-result-info">
+                            <p>
+                                日期：${purchase.date}<br>
+                                供應商：${purchase.supplierName}<br>
+                                備註：${purchase.note ?? ""}
+                            </p>
+                            <button onclick="showPurchaseDetail(${purchase.id})">
+                                查看明細
+                            </button>
+                        </div>
+                        <div class="purchase-result-summary">
+                            <div class="purchase-order-total">
+                                訂單金額：
+                                <strong>${orderTotal.toLocaleString()}</strong>
+                            </div>
+                            <div class="purchase-preview-header">
+                                <span>商品名稱</span>
+                                <span>數量</span>
+                                <span>金額</span>
+                            </div>
+                            ${previewHtml}
+                            ${purchase.items.length > 3
+                                ? `<div class="purchase-more">
+                                    其餘 ${purchase.items.length - 3} 筆商品，請查看明細
+                                </div>`
+                                : ""}
+                        </div>
                     </div>
-                    `;
-            })
+                `;
+            });
         })
         .catch(error => {
             const resultDiv = document.getElementById("searchResult");
@@ -147,12 +176,21 @@ function showPurchaseDetail(purchaseId) {
     purchase.items.forEach(item => {
         detailDiv.innerHTML += `
             <div class="purchaseItem-result">
+                <div class="purchase-item-name">
+                    ${item.name}
+                </div>
                 <p>
-                    商品名稱：${item.name}<br>
                     條碼：${item.barcode ?? ""}<br>
                     數量：${item.quantity}<br>
-                    進價：${item.totalPrice}
+                    進價：${item.totalPrice.toLocaleString()}
                 </p>
-            </div>`;
-    })
+            </div>
+        `;
+    });
+    document.getElementById("purchaseDialog").showModal();
 }
+
+document.getElementById("closeDetailButton")
+    .addEventListener("click", function() {
+        document.getElementById("purchaseDialog").close();
+    });

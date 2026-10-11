@@ -1,26 +1,107 @@
 /* right */
-.purchase-result,
-.purchase-detail,
-.purchaseItem-result {
-    background-color: #f7f7f7;
-    padding: 1px 10px;
+/* 進貨單基本資訊 */
+.purchase-detail {
+    background-color: #eaf3ff;
+    border-left: 4px solid #4a90d9;
+    padding: 14px 18px;
     border-radius: 6px;
-    margin-bottom: 1px;
-    line-height: 1.0;
+    margin-bottom: 18px;
+    font-size: 17px;
+    line-height: 1.5;
 }
 
-.result-layout {
-    display: flex;
-    gap: 5px;
+/* 每筆進貨商品 */
+.purchaseItem-result {
+    background-color: #f5f5f5;
+    border-left: 4px solid #b8b8b8;
+    padding: 12px 18px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.5;
 }
-#searchResult {
-    flex: 1;
+
+/* 避免 p 預設間距讓區塊過高 */
+.purchase-detail p,
+.purchaseItem-result p {
+    margin: 0;
+}
+/* 每張進貨單 */
+.purchase-result {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+    gap: 20px;
+    padding: 14px;
+    margin-bottom: 10px;
+    background-color: #f7f7f7;
+    border-radius: 6px;
+    line-height: 1.5;
+}
+
+.purchase-result-info {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.purchase-result-info p {
+    margin-top: 0;
+}
+
+/* 右側摘要 */
+.purchase-result-summary {
     min-width: 0;
 }
-#purchaseDetail {
-    flex: 2;
-    min-width: 0;
+
+.purchase-order-total {
+    margin-bottom: 12px;
+    font-size: 17px;
 }
+
+.purchase-order-total strong {
+    font-size: 21px;
+}
+
+/* 商品摘要三欄 */
+.purchase-preview-header,
+.purchase-preview-row {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) 55px 90px;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid #ddd;
+    align-items: center;
+}
+
+.purchase-preview-header {
+    font-weight: bold;
+    background-color: #eaeef1;
+    padding: 8px 5px;
+}
+
+.purchase-preview-row span:first-child {
+    overflow-wrap: anywhere;
+}
+
+.purchase-preview-header span:not(:first-child),
+.purchase-preview-row span:not(:first-child) {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.purchase-more {
+    margin-top: 8px;
+    color: #666;
+    font-size: 13px;
+}
+
+@media (max-width: 1050px) {
+    .purchase-result {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
 /* 查詢總表 */
 #purchaseList {
     width: 100%;
@@ -69,3 +150,34 @@
     border-radius: 6px;
 }
 
+/* dialog */
+#purchaseDialog {
+    width: min(700px, 90vw);
+    max-height: 80vh;
+    box-sizing: border-box;
+    padding: 24px;
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    line-height: 1.5;
+}
+
+#purchaseDialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+#purchaseDetail {
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+.purchase-item-name {
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
