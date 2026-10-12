@@ -68,8 +68,11 @@ function createButton() {
 }
 
 function updateButton(id) {
+    console.log("button click ok");
     const supplier = supplierData.find(s => s.id === id);
+    console.log("get data start");
     if(supplier === undefined)  {return;}
+    console.log("get data success");
     const oldName = supplier.name;
 
     const newName = prompt("請輸入新的廠商名稱", oldName);

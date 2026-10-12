@@ -25,11 +25,11 @@ function loadProducts() {
                         商品名稱：${product.name}
                     </p>
                     ${product.status === "ACTIVE" ? `
-                        <button onclick="updateButton(${product.id}")>修改</button>
-                        <button onclick="deleteButton(${product.id}")>刪除</button>
+                        <button onclick="updateButton(${product.id})")>修改</button>
+                        <button onclick="deleteButton(${product.id})")>刪除</button>
                         ` : ""}
-                </div>
-        `});
+                </div>`;
+        })
     })
 }
 
@@ -72,6 +72,7 @@ function createButton() {
 }
 
 function updateButton(id) {
+    console.log("1");
     const product = productData.find(p => p.id === id);
     if(product === undefined) {return;}
     const oldBarcode = product.barcode;

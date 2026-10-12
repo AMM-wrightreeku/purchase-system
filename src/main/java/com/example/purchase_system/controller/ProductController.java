@@ -37,7 +37,7 @@ public class ProductController {
         Integer id = request.getId();
 
         if (id == null || id < 1) {
-            throw new IllegalArgumentException("Invalid supplier ID.");
+            throw new IllegalArgumentException("Invalid product ID.");
         }
         return productService.updateProduct(request.getId(), request.getBarcode(), request.getName());
     }
