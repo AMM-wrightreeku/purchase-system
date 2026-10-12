@@ -9,12 +9,12 @@ function loadProducts() {
         const productList = document.getElementById("productList");
         productList.innerHTML = "<h2>商品列表</h2>";
 
-        products.sort((a, b => {
+        products.sort((a, b) => {
             if(a.status === b.status) {
                 return a.id - b.id;
             }
             return a.status === "ACTIVE" ? -1 : 1 ;
-        }))
+        });
 
         products.forEach(product => {
             productList.innerHTML += `
@@ -25,8 +25,8 @@ function loadProducts() {
                         商品名稱：${product.name}
                     </p>
                     ${product.status === "ACTIVE" ? `
-                        <button onclick="updateButton(${product.id})>修改</button>
-                        <button onclick="deleteButton(${product.id})>刪除</button>
+                        <button onclick="updateButton(${product.id}")>修改</button>
+                        <button onclick="deleteButton(${product.id}")>刪除</button>
                         ` : ""}
                 </div>
         `});
@@ -61,6 +61,8 @@ function createButton() {
         return response.json();
     })
     .then(() => {
+        document.getElementById("barcode").value = "";
+        document.getElementById("name").value = "";
         loadProducts();
     })
     .catch(error => {
@@ -75,8 +77,10 @@ function updateButton(id) {
     const oldBarcode = product.barcode;
     const oldName = product.name;
 
-    const newBarcode = prompt("請輸入新的商品條碼", oldBarcode);
-    const newName = prompt("請輸入新的商品名稱", oldName);
+    const newBarcode = prompt("請輸入新的商品條碼", oldBarcode ?? "");
+    if(newBarcode === null) {return;}
+    const newName = prompt("請輸入新的商品名稱", oldName ?? "");
+    if(newName === null) {return;}
     if(newName.trim() === "") {
         alert("商品名稱不可為空白");
         return;
@@ -86,8 +90,8 @@ function updateButton(id) {
 
     const request = {
         id: id,
-        barcode: barcode,
-        name: name
+        barcode: newBarcode,
+        name: newName
     };
 
     fetch("/products/update", {

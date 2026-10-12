@@ -32,11 +32,6 @@ public class ProductRepository {
         CsvStatusType type = CsvStatusType.CREATE;
         validCrudParameter(null, barcode, name, type);
         validCrudData(null, barcode, name, type);
-
-        // check
-        if (barcode != null && findByBarcode(barcode).isPresent()) {
-            throw new IllegalArgumentException("Barcode already exists"); // 條碼已經存在
-        }
         
         int id = this.maxId + 1;
         Product product = new Product(id, barcode, name);
@@ -51,12 +46,6 @@ public class ProductRepository {
         validCrudParameter(id, barcode, name, type);
         validCrudData(id, barcode, name, type);
 
-        // check
-        if (barcode != null && findByBarcode(barcode).isPresent()) {
-            throw new IllegalArgumentException("Barcode already exists"); // 條碼已經存在
-        }
-
-
         Product newPdut = new Product(id, barcode, name);
         saveProductToCsv(newPdut, type);
         products.put(id, newPdut);
@@ -68,8 +57,6 @@ public class ProductRepository {
         validCrudParameter(id, null, null, type);
         validCrudData(id, null, null, type);
 
-        // check
-  
         String lastName = products.get(id).getName();
         String lastBarcode = products.get(id).getBarcode();
         Product oldPdut = new Product(id, lastBarcode, "(已刪除) " + lastName, ModelStatus.DOWN);
@@ -185,6 +172,7 @@ public class ProductRepository {
                 String status = columns[0].trim();
                 int id = Integer.parseInt(columns[1].trim());
                 String barcode = columns[2].trim();
+                    if(barcode.isEmpty()) {barcode = null;}
                 String name = columns[3].trim();
                 Product product = new Product(id, barcode, name);
                 
@@ -203,7 +191,7 @@ public class ProductRepository {
                         products.put(id, product);
                         products.get(id).setStatus(ModelStatus.DOWN);
                 } else {
-                    throw new IllegalStateException("supplierList.csv format error at line " + (i+1));
+                    throw new IllegalStateException("productList.csv format error at line " + (i+1));
                 }
             }
         } catch(IOException e) {

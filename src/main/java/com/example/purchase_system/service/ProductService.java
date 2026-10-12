@@ -34,7 +34,9 @@ public class ProductService {
             throw new IllegalArgumentException("Product cannot be edited.");
         }
         if(barcode != null && productRep.findByBarcode(barcode).isPresent()) {
-            throw new IllegalArgumentException("Barcode already exists");
+            if(!productRep.findByBarcode(barcode).get().getBarcode().equals(barcode)) {
+                throw new IllegalArgumentException("Barcode already exists");
+            }
         }
         if(name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name cannot be blank.");
