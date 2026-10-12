@@ -99,6 +99,10 @@ document.getElementById("searchButton").addEventListener("click", function() {
                 </div>
             `;
 
+            purchases.sort((a, b) => {
+                return (b.date > a.date) ? 1 : -1
+            });
+
             purchases.forEach(purchase => {
                 const orderTotal = purchase.items.reduce((sum, item) => sum + item.totalPrice,0);
                 const previewItems = purchase.items.slice(0, 3);

@@ -75,13 +75,15 @@ fetch("/suppliers")
             document.getElementById("supplierId");
 
         for(const supplier of suppliers) {
-
-            supplierSelect.innerHTML +=
-                "<option value='" +
-                supplier.id +
-                "'>" +
-                supplier.name +
-                "</option>";
+            if(supplier.status === "ACTIVE") {
+                supplierSelect.innerHTML +=
+                    "<option value='" +
+                    supplier.id +
+                    "'>" + 
+                    supplier.name +
+                    "</option>"
+                ;
+            }
         }
     });
 
