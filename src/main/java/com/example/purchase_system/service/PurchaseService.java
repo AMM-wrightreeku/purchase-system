@@ -140,7 +140,7 @@ public class PurchaseService {
                     }
                 }
                 if(productId == null) {
-                    productId = productRepository.save(
+                    productId = productRepository.create(
                         currentItem.getBarcode(),
                         currentItem.getProductName()
                     ).getId();

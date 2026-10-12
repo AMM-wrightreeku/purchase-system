@@ -7,14 +7,14 @@ public class Supplier {
     private String name;
     private ModelStatus status;
 
-    public Supplier(int id, String name) {
-        this(id, name, ModelStatus.ACTIVE);
-    }
-
     public Supplier(int id, String name, ModelStatus status) {
         this.id = id;
         this.name = name;
         this.status = status;
+    }
+
+    public Supplier(int id, String name) {
+        this(id, name, ModelStatus.ACTIVE);
     }
 
     public int getId() {return id;}

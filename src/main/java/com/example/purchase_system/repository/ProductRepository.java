@@ -14,33 +14,111 @@ import org.springframework.stereotype.Repository;
 
 import com.example.purchase_system.entity.Product;
 import com.example.purchase_system.util.CsvFileUtil;
-import com.example.purchase_system.util.IdGenerator;
+import com.example.purchase_system.util.CsvStatusType;
+import com.example.purchase_system.util.ModelStatus;
 
 
 @Repository
 public class ProductRepository {
     private Map<Integer, Product> products;
+    private int maxId = 0;
 
     public ProductRepository() {
         products = new LinkedHashMap<>();
         loadProductFromCsv();
     }
 
-    public Product save(String barcode, String name) {
+    public Product create(String barcode, String name) {
+        CsvStatusType type = CsvStatusType.CREATE;
+        validCrudParameter(null, barcode, name, type);
+        validCrudData(null, barcode, name, type);
+
         // check
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name cannot be blank."); // 空白名字 
-        }
         if (barcode != null && findByBarcode(barcode).isPresent()) {
             throw new IllegalArgumentException("Barcode already exists"); // 條碼已經存在
         }
-        // main motion
-        int id = IdGenerator.getNextId(products.keySet()); // 呼叫 util 直接找 ID
+        
+        int id = this.maxId + 1;
         Product product = new Product(id, barcode, name);
-        saveProductToCsv(product);
+        saveProductToCsv(product, type);
         products.put(id, product);
+        this.maxId = id;
         return product;
     }
+
+    public Product update(Integer id, String barcode, String name) {
+        CsvStatusType type = CsvStatusType.UPDATE;
+        validCrudParameter(id, barcode, name, type);
+        validCrudData(id, barcode, name, type);
+
+        // check
+        if (barcode != null && findByBarcode(barcode).isPresent()) {
+            throw new IllegalArgumentException("Barcode already exists"); // 條碼已經存在
+        }
+
+
+        Product newPdut = new Product(id, barcode, name);
+        saveProductToCsv(newPdut, type);
+        products.put(id, newPdut);
+        return newPdut;
+    }
+
+    public Product delete(Integer id) {
+        CsvStatusType type = CsvStatusType.DELETE;
+        validCrudParameter(id, null, null, type);
+        validCrudData(id, null, null, type);
+
+        // check
+  
+        String lastName = products.get(id).getName();
+        String lastBarcode = products.get(id).getBarcode();
+        Product oldPdut = new Product(id, lastBarcode, "(已刪除) " + lastName, ModelStatus.DOWN);
+        saveProductToCsv(oldPdut, type);
+        products.put(id, oldPdut);
+        return oldPdut;
+    }
+
+    private void validCrudParameter(Integer id, String barcode, String name, CsvStatusType type) {
+        switch(type) {
+            case DELETE:
+            case UPDATE: 
+                if(id == null) {
+                    throw new IllegalArgumentException("Id is wrong.");
+                }
+                if(type == CsvStatusType.DELETE) {
+                    break;
+                }
+            case CREATE:
+                if(name == null || name.isEmpty()) {
+                    throw new IllegalArgumentException("Name cannot be blank.");
+                }
+        }
+    }
+
+    private void validCrudData(Integer id, String barcode, String name, CsvStatusType type) {
+        switch(type) {
+            case DELETE:
+            case UPDATE: 
+                if(!findById(id).isPresent()) {
+                    throw new IllegalArgumentException("Id is wrong.");
+                }
+                if(type == CsvStatusType.DELETE) {
+                    break;
+                }
+            case CREATE:
+                if(findByBarcode(barcode).isPresent()) {
+                    throw new IllegalArgumentException("Barcode already exists.");
+                }
+                // 這裡我試著練習 .stream()
+                if(findByName(name).stream()
+                                   .filter(n -> name.equals(n.getName()))
+                                   .toList().size() >= 1) {
+                    throw new IllegalArgumentException("Name already exists.");
+                }
+
+        }
+    }
+
     // find
     public Optional<Product> findById(int id) {
         return Optional.ofNullable(products.get(id));
@@ -74,10 +152,10 @@ public class ProductRepository {
         return new ArrayList<>(products.values());
     }   
 
-    private void saveProductToCsv(Product product) {
+    private void saveProductToCsv(Product product, CsvStatusType type) {
         Path path = Path.of("data", "productList.csv");
         try {
-            String line = "CREATE," 
+            String line =  type.getStatus() + "," 
                             + product.getId() + "," 
                             + ((product.getBarcode() == null) ? "" : product.getBarcode()) + "," 
                             + product.getName() + System.lineSeparator();

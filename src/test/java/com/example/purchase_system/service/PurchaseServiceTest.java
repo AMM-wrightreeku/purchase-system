@@ -34,7 +34,7 @@ public class PurchaseServiceTest {
         // supplier id1
         supRep.create("BANDAI");
         // Product id1
-        proRep.save("65536", "NeoGranzon");
+        proRep.create("65536", "NeoGranzon");
         // request
         items = new ArrayList<>();
         items.add(new PurchaseItemRequest(1, "65535", "Granzon", 3, 90000));

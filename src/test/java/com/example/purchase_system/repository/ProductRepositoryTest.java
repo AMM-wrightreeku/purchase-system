@@ -15,8 +15,8 @@ public class ProductRepositoryTest {
     void testSave() {
         ProductRepository proRep = new ProductRepository();
 
-        Product pro1 = proRep.save("65536", "NeoGranzon");
-        Product pro2 = proRep.save("65537", "Granzon");
+        Product pro1 = proRep.create("65536", "NeoGranzon");
+        Product pro2 = proRep.create("65537", "Granzon");
 
         Assertions.assertEquals(1, pro1.getId());
         Assertions.assertEquals(2, pro2.getId());
@@ -30,11 +30,11 @@ public class ProductRepositoryTest {
     void testDuplicateBarcode() {
         ProductRepository proRep = new ProductRepository();
 
-        proRep.save("65536", "NeoGranzon");
+        proRep.create("65536", "NeoGranzon");
 
         Assertions.assertThrows(
             IllegalArgumentException.class,
-            () -> proRep.save("65536", "Granzon")
+            () -> proRep.create("65536", "Granzon")
         );
     }
 
@@ -45,17 +45,17 @@ public class ProductRepositoryTest {
 
         Assertions.assertThrows(
             IllegalArgumentException.class,
-            () -> proRep.save("65536", null)
+            () -> proRep.create("65536", null)
         );
 
         Assertions.assertThrows(
             IllegalArgumentException.class,
-            () -> proRep.save("65537", "")
+            () -> proRep.create("65537", "")
         );
 
         Assertions.assertThrows(
             IllegalArgumentException.class,
-            () -> proRep.save("65538", "   ")
+            () -> proRep.create("65538", "   ")
         );
     }
 
@@ -64,8 +64,8 @@ public class ProductRepositoryTest {
     void testNullBarcode() {
         ProductRepository proRep = new ProductRepository();
 
-        Product pro1 = proRep.save(null, "紅茶");
-        Product pro2 = proRep.save(null, "綠茶");
+        Product pro1 = proRep.create(null, "紅茶");
+        Product pro2 = proRep.create(null, "綠茶");
 
         Assertions.assertNull(pro1.getBarcode());
         Assertions.assertNull(pro2.getBarcode());
@@ -79,7 +79,7 @@ public class ProductRepositoryTest {
     void testFindById() {
         ProductRepository proRep = new ProductRepository();
 
-        proRep.save("65536", "NeoGranzon");
+        proRep.create("65536", "NeoGranzon");
 
         Optional<Product> result1 = proRep.findById(1);
         Optional<Product> result2 = proRep.findById(65535);
@@ -95,8 +95,8 @@ public class ProductRepositoryTest {
     void testFindByBarcode() {
         ProductRepository proRep = new ProductRepository();
 
-        proRep.save("65536", "NeoGranzon");
-        proRep.save(null, "Granzon");
+        proRep.create("65536", "NeoGranzon");
+        proRep.create(null, "Granzon");
 
         Assertions.assertTrue(
             proRep.findByBarcode("65536").isPresent()
@@ -125,10 +125,10 @@ public class ProductRepositoryTest {
     void testFindByName() {
         ProductRepository proRep = new ProductRepository();
 
-        proRep.save(null, "紅茶");
-        proRep.save(null, "無糖紅茶");
-        proRep.save(null, "綠茶");
-        proRep.save(null, "咖啡");
+        proRep.create(null, "紅茶");
+        proRep.create(null, "無糖紅茶");
+        proRep.create(null, "綠茶");
+        proRep.create(null, "咖啡");
 
         List<Product> result1 = proRep.findByName("紅茶");
 

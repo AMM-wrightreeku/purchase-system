@@ -22,7 +22,7 @@ public class ProductService {
         if(barcode != null && productRep.findByBarcode(barcode).isPresent()) 
             throw new IllegalArgumentException("Barcode already exists");
 
-        return productRep.save(barcode, name);
+        return productRep.create(barcode, name);
     }
 
     public Optional<Product> findById(int id) {

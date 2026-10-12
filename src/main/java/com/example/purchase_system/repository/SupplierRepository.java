@@ -36,6 +36,7 @@ public class SupplierRepository {
     public Supplier create(String name) {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("Name cannot be blank.");
         if (findByExactName(name).isPresent()) throw new IllegalArgumentException("The supplier name already exists");
+        
         int id = this.maxId + 1;
         Supplier sup = new Supplier(id, name);
         saveSupplierToCsv(sup, CsvStatusType.CREATE);
@@ -56,6 +57,7 @@ public class SupplierRepository {
         Optional<Supplier> existName = findByExactName(newName);
         if (existName.isPresent() 
             && existName.get().getId() != id) throw new IllegalArgumentException("The supplier name already exists");
+
         Supplier newSup = new Supplier(id, newName);
         saveSupplierToCsv(newSup, CsvStatusType.UPDATE);
         suppliers.put(id, newSup);
@@ -67,6 +69,7 @@ public class SupplierRepository {
         if (!existId.isPresent() || existId.get().getStatus() != ModelStatus.ACTIVE) {
             throw new IllegalArgumentException("The supplier does not exists or be edited");
         }
+        
         String lastName = suppliers.get(id).getName();
         Supplier delSup = new Supplier(id, "(已刪除) " + lastName, ModelStatus.DOWN);
         saveSupplierToCsv(delSup, CsvStatusType.DELETE);
