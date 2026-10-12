@@ -112,7 +112,7 @@ function deleteButton(id) {
     if (!confirmed) {return;}
 
     const request = {
-        id: id,
+        id: id
     };
     
     fetch("/suppliers/delete", {

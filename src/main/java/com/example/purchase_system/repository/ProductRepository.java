@@ -89,7 +89,7 @@ public class ProductRepository {
                     break;
                 }
             case CREATE:
-                if(name == null || name.isEmpty()) {
+                if(name == null || name.isBlank()) {
                     throw new IllegalArgumentException("Name cannot be blank.");
                 }
         }
@@ -102,27 +102,30 @@ public class ProductRepository {
                 if(!findById(id).isPresent()) {
                     throw new IllegalArgumentException("Id is wrong.");
                 }
+                if(findById(id).get().getStatus() == ModelStatus.DOWN) {
+                    throw new IllegalArgumentException("Product cannot be edited.");
+                }
                 if(type == CsvStatusType.DELETE) {
                     break;
                 }
             case CREATE:
                 if(findByBarcode(barcode).isPresent()) {
-                    throw new IllegalArgumentException("Barcode already exists.");
+                    if(id == null || id != findByBarcode(barcode).get().getId()){
+                        throw new IllegalArgumentException("Barcode already exists.");
+                    }
                 }
-                // 這裡我試著練習 .stream()
                 if(findByName(name).stream()
-                                   .filter(n -> name.equals(n.getName()))
-                                   .toList().size() >= 1) {
+                                   .filter(n -> id == null || id != n.getId())
+                                   .anyMatch(n -> name.equals(n.getName()))) {
                     throw new IllegalArgumentException("Name already exists.");
                 }
-
         }
     }
 
-    // find
     public Optional<Product> findById(int id) {
         return Optional.ofNullable(products.get(id));
     }
+
     public Optional<Product> findByBarcode(String barcode) {
         if(barcode == null || barcode.isBlank()) return Optional.empty();
 
@@ -175,17 +178,33 @@ public class ProductRepository {
                 String line = lines.get(i);
                 if(line.isBlank()){continue;} // 我們決定採用 append 但以防萬一還是保留
                 String[] columns = line.split(",", 4);
-                // CREATE, ID, BARCODE, NAME
                 if(columns.length < 4) {throw new IllegalArgumentException(
                     "productList.csv format error at line " + (i+1));
                 }
+
                 String status = columns[0].trim();
-                if(!"CREATE".equals(status)) { continue;}
                 int id = Integer.parseInt(columns[1].trim());
                 String barcode = columns[2].trim();
                 String name = columns[3].trim();
                 Product product = new Product(id, barcode, name);
-                products.put(id, product);
+                
+                if(CsvStatusType.CREATE.getStatus().equals(status)
+                    && !products.containsKey(id)
+                    && id > maxId) {
+                        products.put(id, product);
+                        this.maxId = id;
+                } else if(CsvStatusType.UPDATE.getStatus().equals(status)
+                    && products.containsKey(id)
+                    && products.get(id).getStatus().equals(ModelStatus.ACTIVE)) {
+                        products.put(id, product);
+                } else if(CsvStatusType.DELETE.getStatus().equals(status)
+                    && products.containsKey(id)
+                    && products.get(id).getStatus().equals(ModelStatus.ACTIVE)) {
+                        products.put(id, product);
+                        products.get(id).setStatus(ModelStatus.DOWN);
+                } else {
+                    throw new IllegalStateException("supplierList.csv format error at line " + (i+1));
+                }
             }
         } catch(IOException e) {
             throw new IllegalStateException("Cannot read productList.csv", e);

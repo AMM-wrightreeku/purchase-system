@@ -4,6 +4,13 @@ fetch("/suppliers")
     .then(response => response.json())
     .then(suppliers => {
         const supplierSelect = document.getElementById("supplierId");
+        suppliers.sort((a, b) => {
+            if(a.status === b.status) {
+                return a.id-b.id;
+            }
+            return a.status === "ACTIVE" ? -1 : 1;
+        });
+        
         suppliers.forEach(supplier => {
             supplierSelect.innerHTML += `
             <option value="${supplier.id}">
