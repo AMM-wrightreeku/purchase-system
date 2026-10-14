@@ -124,7 +124,7 @@
 <br>※已刪除廠商將被標註特殊名稱，不會影響歷史進貨單的正確資料
 
 <a href="docs/images/2nd4_supplier.png">
-    <img src="docs/images/2nd4_supplier.png" alt ="廠商管理" width="400">
+    <img src="docs/images/2nd4_supplier.png" alt ="廠商管理" width="800">
 </a>
 
 ---
