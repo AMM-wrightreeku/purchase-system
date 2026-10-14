@@ -182,7 +182,7 @@ Service 層再回傳給 Controller ，Controller 交由 Spring 依照回傳結�
 <br>　　　 quantity >= 1, totalPrice >= 0。
 
 <a href="docs/images/3rd_model.png">
-    <img src="docs/images/3rd_model.png" alt ="資料之間的關係" width="400">
+    <img src="docs/images/3rd_model.png" alt ="資料之間的關係" width="800">
 </a>
 
 ---
