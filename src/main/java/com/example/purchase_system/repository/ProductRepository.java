@@ -59,7 +59,7 @@ public class ProductRepository {
 
         String lastName = products.get(id).getName();
         String lastBarcode = products.get(id).getBarcode();
-        Product oldPdut = new Product(id, lastBarcode, "(已刪除) " + lastName, ModelStatus.DOWN);
+        Product oldPdut = new Product(id, lastBarcode, "(已刪除商品) " + lastName, ModelStatus.DOWN);
         saveProductToCsv(oldPdut, type);
         products.put(id, oldPdut);
         return oldPdut;

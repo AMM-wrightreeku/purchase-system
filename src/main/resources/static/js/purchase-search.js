@@ -135,7 +135,7 @@ document.getElementById("searchButton").addEventListener("click", function() {
                         </div>
                         <div class="purchase-result-summary">
                             <div class="purchase-order-total">
-                                訂單金額：
+                                進貨單金額：
                                 <strong>${orderTotal.toLocaleString()}</strong>
                             </div>
                             <div class="purchase-preview-header">

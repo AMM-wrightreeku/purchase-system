@@ -71,7 +71,7 @@ public class SupplierRepository {
         }
         
         String lastName = suppliers.get(id).getName();
-        Supplier delSup = new Supplier(id, "(已刪除) " + lastName, ModelStatus.DOWN);
+        Supplier delSup = new Supplier(id, "(已刪除廠商) " + lastName, ModelStatus.DOWN);
         saveSupplierToCsv(delSup, CsvStatusType.DELETE);
         suppliers.put(id, delSup);
         return delSup;
