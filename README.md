@@ -7,8 +7,7 @@
 
 ### 程式下載
 
-[下載最新版本]
-(https://github.com/AMM-wrightreeku/purchase-system/releases/latest)
+[下載最新版本](https://github.com/AMM-wrightreeku/purchase-system/releases/latest)
 
 ---
 
