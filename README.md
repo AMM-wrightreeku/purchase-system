@@ -5,6 +5,11 @@
 提供了簡易的登錄、查詢功能。
 只要電腦可以運行 Java 的話，不需要另外安裝其他程式即可使用。
 
+### 程式下載
+
+[下載最新版本]
+(https://github.com/AMM-wrightreeku/purchase-system/releases/latest)
+
 ---
 
 ## 2. 用途及操作
