@@ -20,7 +20,7 @@
 4) 關閉時按下操作畫面上方的[關閉系統]即可關閉
 
 <a href="docs/images/2nd_openedPic.png">
-    <img src="docs/images/2nd_openedPic.png> alt ="系統主畫面" width="400">
+    <img src="docs/images/2nd_openedPic.png" alt ="系統主畫面" width="400">
 </a>
 ---
 
@@ -56,10 +56,10 @@
 3) 確認有問題的話，按下[取消返回]，就會回到原本頁面
 
 <a href="docs/images/2nd1_put.png">
-    <img src="docs/images/2nd1_put.png> alt ="登錄畫面" width="400">
+    <img src="docs/images/2nd1_put.png" alt ="登錄畫面" width="400">
 </a>
 <a href="docs/images/2nd1_putFinal.png">
-    <img src="docs/images/2nd1_putFinal.png> alt ="最終確認" width="400">
+    <img src="docs/images/2nd1_putFinal.png" alt ="最終確認" width="400">
 </a>
 
 ---
@@ -83,10 +83,10 @@
 1) 提供此筆進貨單登錄時的所有資訊
 
 <a href="docs/images/2nd2_put.png">
-    <img src="docs/images/2nd2_put.png> alt ="查詢結果" width="400">
+    <img src="docs/images/2nd2_put.png" alt ="查詢結果" width="400">
 </a>
 <a href="docs/images/2nd2_putDetail.png">
-    <img src="docs/images/2nd2_putDetail.png> alt ="進貨明細" width="400">
+    <img src="docs/images/2nd2_putDetail.png" alt ="進貨明細" width="400">
 </a>
 
 ---
@@ -105,7 +105,7 @@
 ※已刪除商品將被標註特殊名稱，不會影響歷史進貨單的正確資料
 
 <a href="docs/images/2nd3_product.png">
-    <img src="docs/images/2nd3_product.png> alt ="商品管理" width="400">
+    <img src="docs/images/2nd3_product.png" alt ="商品管理" width="400">
 </a>
 
 ---
@@ -123,7 +123,7 @@
 ※已刪除廠商將被標註特殊名稱，不會影響歷史進貨單的正確資料
 
 <a href="docs/images/2nd4_supplier.png">
-    <img src="docs/images/2nd4_supplier.png> alt ="廠商管理" width="400">
+    <img src="docs/images/2nd4_supplier.png" alt ="廠商管理" width="400">
 </a>
 
 ---
@@ -181,8 +181,9 @@ Service 層再回傳給 Controller ，Controller 交由 Spring 依照回傳結�
 　　　 quantity >= 1, totalPrice >= 0。
 
 ．資料之間的關係
+
 <a href="docs/images/3rd_model.png">
-    <img src="docs/images/3rd_model.png> alt ="資料之間的關係" width="400">
+    <img src="docs/images/3rd_model.png" alt ="資料之間的關係" width="400">
 </a>
 
 ---
