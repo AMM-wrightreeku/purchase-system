@@ -13,7 +13,7 @@ public class PurchaseRepositoryTest {
     void testSave() {
         PurchaseRepository purRep = new PurchaseRepository();
         LocalDate date = LocalDate.of(2026, 9, 10);
-        Purchase pur = purRep.save(1, date, "SuperRobotWars");
+        Purchase pur = purRep.create(1, date, "SuperRobotWars");
         Assertions.assertEquals(1, pur.getId());
         Assertions.assertEquals(1, pur.getSupplierId());
         Assertions.assertEquals(LocalDate.of(2026, 9, 10), pur.getDate());
@@ -24,14 +24,14 @@ public class PurchaseRepositoryTest {
     void testSaveWithoutNote() {
         // 此處註解程式碼有錯
         PurchaseRepository purRep = new PurchaseRepository();
-        Purchase pur = purRep.save(1, LocalDate.of(2026, 9, 10));
+        Purchase pur = purRep.create(1, LocalDate.of(2026, 9, 10));
         Assertions.assertNull(pur.getNote());
     }
     // 3. testFindById
     @Test
     void testFindById() {
         PurchaseRepository purRep = new PurchaseRepository();
-        purRep.save(1, LocalDate.of(2026, 9, 10));
+        purRep.create(1, LocalDate.of(2026, 9, 10));
         Assertions.assertTrue(purRep.findById(1).isPresent());
         Assertions.assertFalse(purRep.findById(999).isPresent());
     }

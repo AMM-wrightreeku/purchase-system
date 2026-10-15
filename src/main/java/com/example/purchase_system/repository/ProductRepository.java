@@ -34,6 +34,7 @@ public class ProductRepository {
         validCrudData(null, barcode, name, type);
         
         int id = this.maxId + 1;
+        
         Product product = new Product(id, barcode, name);
         saveProductToCsv(product, type);
         products.put(id, product);
@@ -59,10 +60,10 @@ public class ProductRepository {
 
         String lastName = products.get(id).getName();
         String lastBarcode = products.get(id).getBarcode();
-        Product oldPdut = new Product(id, lastBarcode, "(已刪除商品) " + lastName, ModelStatus.DOWN);
-        saveProductToCsv(oldPdut, type);
-        products.put(id, oldPdut);
-        return oldPdut;
+        Product delPdut = new Product(id, lastBarcode, "(已刪除商品) " + lastName, ModelStatus.DOWN);
+        saveProductToCsv(delPdut, type);
+        products.put(id, delPdut);
+        return delPdut;
     }
 
     private void validCrudParameter(Integer id, String barcode, String name, CsvStatusType type) {
@@ -79,6 +80,8 @@ public class ProductRepository {
                 if(name == null || name.isBlank()) {
                     throw new IllegalArgumentException("Name cannot be blank.");
                 }
+                break;
+            default: throw new IllegalArgumentException("Wrong csv status, please check.");
         }
     }
 
@@ -106,9 +109,71 @@ public class ProductRepository {
                                    .anyMatch(n -> name.equals(n.getName()))) {
                     throw new IllegalArgumentException("Name already exists.");
                 }
+                break;
+
+            default: throw new IllegalArgumentException("Wrong csv status, please check.");
         }
     }
 
+    private void saveProductToCsv(Product product, CsvStatusType type) {
+        Path path = Path.of("data", "productList.csv");
+        try {
+            String line =  type.getStatus() + "," 
+                            + product.getId() + "," 
+                            + ((product.getBarcode() == null) ? "" : product.getBarcode()) + "," 
+                            + product.getName() + System.lineSeparator();
+            Files.writeString(path, line, StandardCharsets.UTF_8
+                                , StandardOpenOption.APPEND
+            );
+        } catch(IOException e) {
+            throw new IllegalStateException("Cannot save productList.csv", e);
+        }
+    }
+
+    private void loadProductFromCsv() {
+        try {
+            List<String> lines = CsvFileUtil.loadDocument("data"
+                                                        , "productList.csv"
+                                                        , "STATUS,ID,BARCODE,NAME");
+            for(int i = 1; i < lines.size(); i++) {
+                String line = lines.get(i);
+                if(line.isBlank()){continue;} // 我們決定採用 append 但以防萬一還是保留
+                String[] columns = line.split(",", 4);
+                if(columns.length < 4) {throw new IllegalArgumentException(
+                    "productList.csv format error at line " + (i+1));
+                }
+
+                String status = columns[0].trim();
+                int id = Integer.parseInt(columns[1].trim());
+                String barcode = columns[2].trim();
+                    if(barcode.isEmpty()) {barcode = null;}
+                String name = columns[3].trim();
+                Product product = new Product(id, barcode, name);
+                
+                if(CsvStatusType.CREATE.getStatus().equals(status)
+                    && !products.containsKey(id)
+                    && id > maxId) {
+                        products.put(id, product);
+                        this.maxId = id;
+                } else if(CsvStatusType.UPDATE.getStatus().equals(status)
+                    && products.containsKey(id)
+                    && products.get(id).getStatus().equals(ModelStatus.ACTIVE)) {
+                        products.put(id, product);
+                } else if(CsvStatusType.DELETE.getStatus().equals(status)
+                    && products.containsKey(id)
+                    && products.get(id).getStatus().equals(ModelStatus.ACTIVE)) {
+                        product.setStatus(ModelStatus.DOWN);
+                        products.put(id, product);
+                } else {
+                    throw new IllegalStateException("productList.csv format error at line " + (i+1));
+                }
+            }
+        } catch(IOException e) {
+            throw new IllegalStateException("Cannot read productList.csv", e);
+        }
+    }
+
+    
     public Optional<Product> findById(int id) {
         return Optional.ofNullable(products.get(id));
     }
@@ -142,60 +207,4 @@ public class ProductRepository {
         return new ArrayList<>(products.values());
     }   
 
-    private void saveProductToCsv(Product product, CsvStatusType type) {
-        Path path = Path.of("data", "productList.csv");
-        try {
-            String line =  type.getStatus() + "," 
-                            + product.getId() + "," 
-                            + ((product.getBarcode() == null) ? "" : product.getBarcode()) + "," 
-                            + product.getName() + System.lineSeparator();
-            Files.writeString(path, line, StandardCharsets.UTF_8
-                                , StandardOpenOption.APPEND
-            );
-        } catch(IOException e) {
-            throw new IllegalStateException("Cannot save productList.csv", e);
-        }
-    }
-
-    private void loadProductFromCsv() {
-        try {
-            List<String> lines = CsvFileUtil.loadDocument("data", "productList.csv"
-                                                        , "STATUS,ID,BARCODE,NAME");
-            for(int i = 1; i < lines.size(); i++) {
-                String line = lines.get(i);
-                if(line.isBlank()){continue;} // 我們決定採用 append 但以防萬一還是保留
-                String[] columns = line.split(",", 4);
-                if(columns.length < 4) {throw new IllegalArgumentException(
-                    "productList.csv format error at line " + (i+1));
-                }
-
-                String status = columns[0].trim();
-                int id = Integer.parseInt(columns[1].trim());
-                String barcode = columns[2].trim();
-                    if(barcode.isEmpty()) {barcode = null;}
-                String name = columns[3].trim();
-                Product product = new Product(id, barcode, name);
-                
-                if(CsvStatusType.CREATE.getStatus().equals(status)
-                    && !products.containsKey(id)
-                    && id > maxId) {
-                        products.put(id, product);
-                        this.maxId = id;
-                } else if(CsvStatusType.UPDATE.getStatus().equals(status)
-                    && products.containsKey(id)
-                    && products.get(id).getStatus().equals(ModelStatus.ACTIVE)) {
-                        products.put(id, product);
-                } else if(CsvStatusType.DELETE.getStatus().equals(status)
-                    && products.containsKey(id)
-                    && products.get(id).getStatus().equals(ModelStatus.ACTIVE)) {
-                        products.put(id, product);
-                        products.get(id).setStatus(ModelStatus.DOWN);
-                } else {
-                    throw new IllegalStateException("productList.csv format error at line " + (i+1));
-                }
-            }
-        } catch(IOException e) {
-            throw new IllegalStateException("Cannot read productList.csv", e);
-        }
-    }
 }

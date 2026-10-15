@@ -18,7 +18,7 @@ function loadProducts() {
 
         products.forEach(product => {
             productList.innerHTML += `
-                <div class="product">
+                <div class="product ${product.status === "DOWN" ? "model-deleted" : ""}">
                     <p>
                         ID：${product.id}<br>
                         條碼：${product.barcode ?? ""}<br>

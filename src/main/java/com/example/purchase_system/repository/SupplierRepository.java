@@ -152,8 +152,8 @@ public class SupplierRepository {
                 } else if(CsvStatusType.DELETE.getStatus().equals(status)
                     && suppliers.containsKey(id)
                     && suppliers.get(id).getStatus().equals(ModelStatus.ACTIVE)) {
+                        supplier.setStatus(ModelStatus.DOWN);
                         suppliers.put(id, supplier);
-                        suppliers.get(id).setStatus(ModelStatus.DOWN);
                 } else {
                     throw new IllegalStateException("supplierList.csv format error at line " + (i+1));
                 }

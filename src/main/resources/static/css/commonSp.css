@@ -1,0 +1,7 @@
+
+/* 特殊設置 */
+/* 被刪除的 model */
+.model-deleted {
+    background-color: #fff0f0;
+    border: 1px solid #e8a0a0;
+}

@@ -18,7 +18,7 @@ function loadSuppliers() {
 
         suppliers.forEach(supplier => {
             supplierList.innerHTML += `
-                <div class="supplier">
+                <div class="supplier ${supplier.status === "DOWN" ? "model-deleted" : ""}">
                     <p>
                         ID：${supplier.id}<br>
                         廠商：${supplier.name}
