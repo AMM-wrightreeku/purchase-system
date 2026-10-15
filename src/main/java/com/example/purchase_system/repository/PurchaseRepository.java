@@ -59,7 +59,8 @@ public class PurchaseRepository {
         Purchase delPur = new Purchase(id 
                                       , findById(id).get().getSupplierId()
                                       , findById(id).get().getDate()
-                                      , "【進貨單已刪除】" + findById(id).get().getNote());
+                                      , "【進貨單已刪除】" + findById(id).get().getNote()
+                                      , ModelStatus.DOWN);
         savePurchaseToCsv(delPur, type);
         purchases.put(id, delPur);
         return delPur;

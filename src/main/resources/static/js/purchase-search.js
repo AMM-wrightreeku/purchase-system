@@ -1,4 +1,5 @@
 let currentPurchases = [];
+let currentPurchaseId = null;
 
 fetch("/suppliers")
     .then(response => response.json())
@@ -107,7 +108,10 @@ document.getElementById("searchButton").addEventListener("click", function() {
             `;
 
             purchases.sort((a, b) => {
-                return (b.date > a.date) ? 1 : -1
+                if(a.status === b.status) {
+                    return (b.date > a.date) ? 1 : -1
+                }
+                return a.status === "ACTIVE" ? -1 : 1 ;
             });
 
             purchases.forEach(purchase => {
@@ -122,7 +126,7 @@ document.getElementById("searchButton").addEventListener("click", function() {
                 `).join("");
 
                 resultDiv.innerHTML += `
-                    <div class="purchase-result">
+                    <div class="purchase-result ${purchase.status === "DOWN" ? "model-deleted" : ""}">
                         <div class="purchase-result-info">
                             <p>
                                 日期：${purchase.date}<br>
@@ -176,7 +180,7 @@ function showPurchaseDetail(purchaseId) {
 
     detailDiv.innerHTML = `
         <h2>進貨明細</h2>
-        <div class="purchase-detail">
+        <div class="purchase-detail ${purchase.status === "DOWN" ? "model-deleted" : ""}">
             <p>
                 日期：${purchase.date}<br>
                 供應商：${purchase.supplierName}<br>
@@ -199,12 +203,27 @@ function showPurchaseDetail(purchaseId) {
         `;
     });
     document.getElementById("purchaseDialog").showModal();
-    document.getElementById("deletePurchaseButton")
+    currentPurchaseId = purchaseId;
+
+    const deleteButton = document.getElementById("deletePurchaseButton");
+    deleteButton.hidden = purchase.status === "DOWN";
+}
+
+document.getElementById("closeDetailButton")
+    .addEventListener("click", function() {
+        document.getElementById("purchaseDialog").close();
+    });
+
+document.getElementById("deletePurchaseButton")
     .addEventListener("click", function () {
+      
         const confirmed = confirm("確定要刪除這張進貨單嗎？");
         if(!confirmed) {return;}
+        if(currentPurchaseId === null) {
+            throw new Error("進貨單 id 錯誤");
+        }
 
-        fetch(`/purchase/${purchaseId}`, {
+        fetch(`/purchases/${currentPurchaseId}`, {
             method: "DELETE",
         })
         .then(response => {
@@ -213,15 +232,8 @@ function showPurchaseDetail(purchaseId) {
             }
             return response.json();
         })
-        .then(() => {
+        .catch(error => {
             alert("刪除進貨單失敗");
             console.log(error);
         })
     });
-}
-
-document.getElementById("closeDetailButton")
-    .addEventListener("click", function() {
-        document.getElementById("purchaseDialog").close();
-    });
-

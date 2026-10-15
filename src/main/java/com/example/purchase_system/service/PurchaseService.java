@@ -195,6 +195,7 @@ public class PurchaseService {
           , purchase.getDate()
           , purchase.getNote()
           , toItemDetailResponses(purchaseItems)
+          , purchase.getStatus()
         );
     }
 
