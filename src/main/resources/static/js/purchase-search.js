@@ -232,6 +232,12 @@ document.getElementById("deletePurchaseButton")
             }
             return response.json();
         })
+        .then(() => {
+            alert("刪除進貨單成功");
+
+            document.getElementById("purchaseDialog").close();
+            document.getElementById("searchButton").click();
+        })
         .catch(error => {
             alert("刪除進貨單失敗");
             console.log(error);

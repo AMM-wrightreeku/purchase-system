@@ -92,6 +92,7 @@
 （進貨查詢 - 進貨明細）
 1) 提供此筆進貨單登錄時的所有資訊
 2) 可以按下[刪除此進貨單]進行進貨單的刪除
+<br>※已刪除進貨單將被標註特殊備註，不會影響歷史進貨單的資料
 
 <a href="docs/images/2nd2_put.png">
     <img src="docs/images/2nd2_put.png" alt ="查詢結果" width="800">
@@ -182,7 +183,7 @@ Service 層再回傳給 Controller ，Controller 交由 Spring 依照回傳結�
 <br>其中的 barcode 允許 null, status 由 ModelStatus enum 管理。
 
 ##### 3. Purchase
-用來識別資料唯一的[id] 跟商業邏輯上需要的 供應商id[supplierId], 進貨單日期[date], 備註[note]。
+用來識別資料唯一的[id] 跟商業邏輯上需要的 供應商id[supplierId], 進貨單日期[date], 備註[note], 資料狀態[status]。
 <br>其中的 supplierId 會對應上 Supplier.id
 <br>　　　 note 允許 null。
 
@@ -198,6 +199,7 @@ Service 層再回傳給 Controller ，Controller 交由 Spring 依照回傳結�
 ---
 
 #### 資料的儲存與還原
+
 ．程式執行時的運作
 
 資料的模型儲存時，會交由對應的 Repository 進行寫入方法的呼叫。
