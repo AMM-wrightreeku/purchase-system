@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,11 @@ public class PurchaseController {
     @PostMapping
     public Purchase createPurchase(@RequestBody PurchaseRequest request) {
         return purchaseService.createPurchase(request);
+    }
+
+    @DeleteMapping("/{purchaseId}")
+    public Purchase deletePurchase(@PathVariable Integer purchaseId) {
+        return purchaseService.deletePurchase(purchaseId);
     }
 
     @GetMapping

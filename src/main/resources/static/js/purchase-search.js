@@ -199,9 +199,29 @@ function showPurchaseDetail(purchaseId) {
         `;
     });
     document.getElementById("purchaseDialog").showModal();
+    document.getElementById("deletePurchaseButton")
+    .addEventListener("click", function () {
+        const confirmed = confirm("確定要刪除這張進貨單嗎？");
+        if(!confirmed) {return;}
+
+        fetch(`/purchase/${purchaseId}`, {
+            method: "DELETE",
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("刪除進貨單失敗");
+            }
+            return response.json();
+        })
+        .then(() => {
+            alert("刪除進貨單失敗");
+            console.log(error);
+        })
+    });
 }
 
 document.getElementById("closeDetailButton")
     .addEventListener("click", function() {
         document.getElementById("purchaseDialog").close();
     });
+

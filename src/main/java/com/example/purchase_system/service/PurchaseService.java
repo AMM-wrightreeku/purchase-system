@@ -42,7 +42,7 @@ public class PurchaseService {
         checkRequestData(request);
         List<Integer> productIds = getOrCreateProductIds(request);
 
-        Purchase purchase = purchaseRepository.save(request.getSupplierId(), request.getPurchaseDate(), request.getNote());
+        Purchase purchase = purchaseRepository.create(request.getSupplierId(), request.getPurchaseDate(), request.getNote());
         for(int i = 0; i < request.getItems().size(); i++) {
             pItemRepository.save(purchase.getId()
                                 , productIds.get(i)
@@ -52,6 +52,10 @@ public class PurchaseService {
         return purchase;
     }
     
+    public Purchase deletePurchase(Integer id) {
+        return purchaseRepository.delete(id);
+    }
+
     // 名稱重新命名?
     // 現在這個 java 有 200 行 CODE，這個方法有必要為了閱讀性分出去嗎？
     private void checkRequest(PurchaseRequest request) {
